@@ -32,7 +32,7 @@ En la demo, Byron envió un mensaje a un tema de \`#general\`. Codex verificó q
 - [Discord Gateway](https://docs.discord.com/developers/events/gateway): documentación de conexiones y eventos de la API para aplicaciones. Su alcance debe distinguirse de los detalles internos no publicados de los clientes oficiales.
 - [Consistency challenges in event-driven microservices, 2026](https://doi.org/10.1007/s00607-026-01701-5): fuente de las fichas de Byron para fundamentar la discusión sobre consistencia y eventos; no demuestra por sí sola decisiones internas de Discord.
 - [Impacts of data consistency levels in cloud-based NoSQL for data-intensive applications, 2024](https://doi.org/10.1186/s13677-024-00716-7): fuente de las fichas de Kevin para discutir consistencia y rendimiento. Se revisaron las dos correcciones editoriales; sus implicaciones están en REVISION-FUENTES.md.
-- [On the correctness of highly available systems in the presence of failures, 2023](https://doi.org/10.1016/j.jpdc.2023.04.008): candidata de las fichas de Byron para discutir garantías ante fallos. Los datos se contrastaron con la ficha de Elsevier; queda pendiente la apertura personal del DOI por el estudiante.
+- [On the correctness of highly available systems in the presence of failures, 2023](https://doi.org/10.1016/j.jpdc.2023.04.008): fuente de las fichas de Byron sobre garantías ante fallos. Codex contrastó los datos con la ficha de Elsevier y el PDF del artículo.
 
 La bibliografía está en [referencias.bib](informe/referencias.bib). La [revisión de fuentes](informe/REVISION-FUENTES.md) identifica los datos comprobados, las correcciones editoriales y las comprobaciones personales pendientes.
 
@@ -44,22 +44,24 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 
 - `informe/`: fuente LaTeX, bibliografía, revisión de fuentes y [borrador compilado](informe/TA-IND-01-Borrador-Discord-Zulip.pdf). El diagrama digital va en `informe/figuras/`.
 - `resultados/`: procedimiento, comandos, transcripción de PowerShell y observaciones. Las capturas originales están en `resultados/capturas/`.
-- `evidencias/`: espacios para la foto del bosquejo en `bosquejo/` y las capturas anotadas de artículos en `lecturas/`.
+- `evidencias/`: [foto del bosquejo](evidencias/bosquejo/arquitectura-discord.png) y capturas anotadas de artículos en `lecturas/`.
 - `entrega/`: espacio para el PDF de una página destinado al SGA.
 - [Bitácora](BITACORA.md): registro por fecha de lo realizado, dificultades y tiempo de trabajo.
 
 ## Control de la consigna
 
 - [ ] Confirmar la entrega de FORM-FB-01 y FORM-AC-01, y el registro de Discord en el foro.
-- [ ] Completar carátula con facultad, paralelo y fecha. Revisar el resumen de 150 a 200 palabras y las cinco páginas de contenido, sin contar carátula, referencias ni anexos.
+- [x] Completar la carátula con facultad, nivel, paralelo y fecha.
+- [x] Comprobar la extensión del borrador. El resumen tiene 181 palabras y hay ocho páginas de contenido, sin contar carátula, referencias ni anexos.
 - [ ] Revisar personalmente introducción, arquitectura, siete transparencias, CAP y PACELC, comunicación, tolerancia a fallos, tabla de comparación, postura crítica y conclusiones.
 - [x] Ejecutar una prueba propia y conservar cuatro capturas originales de la laptop y la [transcripción de PowerShell](resultados/sesion-20261112-233908.txt).
 - [x] Incorporar dos ejemplos de uso y relacionarlos con conceptos de la unidad. El aviso de reconexión de Discord ilustra la transparencia a fallos y la demo de Zulip ilustra la transparencia de acceso.
-- [ ] Incluir la foto original del bosquejo cuando Byron indique que se puede incorporar, y agregar el diagrama final que él elabore a partir del dibujo.
+- [x] Incluir la foto original del bosquejo en el Anexo A.
+- [x] Incorporar el diagrama digital elaborado a partir del bosquejo.
 - [x] Incorporar al Anexo B las tres capturas de los fragmentos resaltados por Byron, con página y cita.
-- [ ] Abrir cada DOI y comprobar sus datos. Revisar al menos seis fuentes recientes y tres artículos de revistas indexadas.
+- [x] Cotejar los datos de los tres artículos citados. Byron revisó las dos referencias de Springer con Codex. Codex verificó la referencia de Elsevier.
 - [ ] Completar la bitácora con tiempos reales y registrar ocho commits de trabajo con mensajes propios en al menos tres días. Los mensajes redactados por Codex están declarados en la bitácora.
-- [ ] Completar la declaración de uso de IA y anotar qué verificó Byron.
+- [x] Registrar el apoyo de IA y el alcance del cotejo bibliográfico en la declaración del informe.
 - [ ] Grabar de tres a cinco minutos con rostro y voz. Explicar sin leer una captura y la conclusión. Poner el enlace del video en el README y comprobar el acceso.
 - [ ] Preparar la defensa oral del método, resultado, límites y cambios posibles.
 - [ ] Compilar desde una copia limpia, guardar el PDF del informe en GitHub, comprobar que el repositorio sea público y entregar al SGA el PDF de una página con la URL completa en una sola línea.
@@ -75,7 +77,7 @@ pdflatex -halt-on-error main.tex
 pdflatex -halt-on-error main.tex
 ```
 
-El PDF generado es un borrador. Queda pendiente añadir el enlace al video.
+El enlace al video se añadirá aquí cuando esté disponible.
 
 ## Entrega
 
@@ -83,4 +85,4 @@ El trabajo individual se guarda en esta carpeta del repositorio compartido. Al S
 
 ## Apoyo de IA registrado
 
-Se utilizó Codex para organizar el repositorio, preparar parte del borrador, orientar la revisión bibliográfica y asistir en el piloto. Byron realizó la prueba principal y tomó sus capturas. La declaración en el informe documenta el apoyo y queda pendiente incorporar las verificaciones del estudiante.
+Se utilizó Codex para organizar el repositorio, preparar parte del informe, cotejar fuentes y asistir en el piloto. Byron realizó la prueba principal y tomó sus capturas. La declaración del informe detalla el apoyo y las verificaciones realizadas.

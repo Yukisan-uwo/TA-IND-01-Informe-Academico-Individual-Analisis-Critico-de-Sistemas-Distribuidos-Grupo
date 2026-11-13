@@ -1,4 +1,5 @@
 \documentclass[11pt,a4paper]{article}
+\pdfminorversion=7
 \usepackage[T1]{fontenc}
 \usepackage[spanish]{babel}
 \usepackage[margin=2.5cm]{geometry}
@@ -8,8 +9,7 @@
 \usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 \addbibresource{referencias.bib}
-
-\newcommand{\pendiente}[1]{\par\smallskip\noindent\textit{Pendiente: #1}\par}
+\DefineBibliographyStrings{spanish}{artno = {art\adddot}}
 
 \begin{document}
 
@@ -17,7 +17,7 @@
   \centering
   {\Large Universidad Técnica Estatal de Quevedo\par}
   \vspace{0.7em}
-  Facultad: por confirmar\par
+  Facultad de Ciencias de la Computación\par
   Carrera: Ingeniería de Software\par
   Aplicaciones Distribuidas\par
   \vfill
@@ -26,13 +26,12 @@
   {\large Comparación con Zulip\par}
   \vspace{1.5em}
   TA-IND-01\par
-  Borrador de trabajo\par
   \vfill
   Byron Daniel Loor Mendoza\par
-  Paralelo: por confirmar\par
-  Fecha de entrega: por confirmar\par
+  Séptimo nivel, paralelo A\par
+  13 de noviembre de 2026\par
   \vspace{1em}
-  \href{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}{Repositorio del informe}
+  {\small\url{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}\par}
 \end{titlepage}
 
 \begin{abstract}
@@ -68,7 +67,12 @@ nodos de Cassandra a 72 de ScyllaDB, según el reporte de 2023
 \cite{ingram2023messages}. Zulip también ofrece chat por canales y
 organiza conversaciones por temas para equipos que trabajan de forma
 sincrónica o en horarios distintos \cite{abbott2026zulip}.
-\pendiente{Añadir la razón personal para elegir Discord.}
+
+Elegí Discord porque lo uso a diario y ya conocía su funcionamiento
+como usuario. Esa familiaridad me facilitó plantear una prueba con
+situaciones cotidianas y estudiar aspectos que antes pasaba por alto,
+como qué ocurre con los mensajes cuando pierdo la conexión y vuelvo a
+conectarme.
 
 \section{Arquitectura}
 La API HTTP permite solicitar el historial y crear mensajes. La
@@ -85,7 +89,21 @@ actualizado al cliente conectado y la otra obtiene mensajes que ya se
 guardaron. La API pública describe la reanudación de sesiones para
 aplicaciones, que usan un identificador de sesión y un número de
 secuencia \cite{discordGateway}.
-\pendiente{Incorporar el diagrama digital elaborado por Byron y explicar cómo evolucionó desde su bosquejo.}
+La figura~\ref{fig:arquitectura-discord} digitaliza el bosquejo del
+Anexo~\ref{anexo:bosquejo}. La línea punteada indica la relación
+conceptual entre crear un mensaje y generar un evento para el cliente.
+
+\begin{center}
+\begin{minipage}{0.96\linewidth}
+  \centering
+  \makeatletter
+  \def\@captype{figure}
+  \makeatother
+  \includegraphics[width=\linewidth]{figuras/arquitectura-discord.pdf}
+  \caption{Flujos de solicitud, almacenamiento y entrega de eventos en Discord.}
+  \label{fig:arquitectura-discord}
+\end{minipage}
+\end{center}
 
 \section{Conceptos de sistemas distribuidos}
 \subsection{Transparencias}
@@ -304,23 +322,43 @@ operación, la configuración de almacenamiento y las condiciones de
 fallo que debe soportar.
 
 \section{Conclusiones}
-En el ensayo de Discord, Chrome volvió a mostrar los tres mensajes
-enviados mientras la laptop estuvo desconectada, en el orden observado
-en el teléfono y sin recarga manual. Esto respalda la recuperación del
-cliente en la condición ensayada. La comparación explica por qué la
-entrega de eventos y la persistencia se evalúan por separado: los
-eventos mantienen actualizado al cliente y el historial proporciona una
-fuente que se puede consultar tras un corte.
+Al reconectar la laptop, Discord mostró en Chrome los tres mensajes
+enviados desde el teléfono durante el corte. Aparecieron en el orden
+M1, M2 y M3, sin duplicados visibles ni recarga manual. En esa ronda,
+el cliente recuperó la vista del canal. Quedaron sin medir el tiempo
+de recuperación y el comportamiento ante un fallo entre réplicas.
+
+La comparación con Zulip distingue dos tareas. La entrega de eventos
+mantiene actualizada la vista del usuario y el almacenamiento permite
+consultar el historial. Discord documenta eventos por WebSocket y
+servicios de datos sobre ScyllaDB. Zulip documenta una cola de eventos
+consultada mediante espera prolongada y un historial en PostgreSQL
+\cite{discordGateway,ingram2023messages,zulipEvents,zulipSendingMessages}.
+La prueba de Discord permite concluir que el cliente se recuperó del
+corte observado. Para comparar las garantías de persistencia o la
+latencia de ambos sistemas harían falta pruebas con las mismas
+condiciones y control sobre el almacenamiento.
 
 \section*{Declaración de uso de inteligencia artificial}
-Se utilizó Codex (modelo GPT-6.1 Sol) para organizar y redactar partes
-del borrador, orientar la revisión de fuentes, asistir en el piloto y
-ordenar las capturas originales de la prueba que realizó el estudiante.
-En Zulip, Codex preparó el borrador del mensaje, verificó que siguiera
-visible al volver al tema y tomó la captura. Byron realizó el envío.
-Para las lecturas, Codex ubicó los fragmentos y tomó las capturas en
-Edge a partir de los PDF resaltados por Byron.
-\pendiente{Completar la declaración con los usos posteriores y la verificación que realizó el estudiante.}
+Utilicé OpenAI Codex (modelo GPT-6.1 Sol) para organizar el repositorio,
+estructurar y redactar partes del borrador, revisar los requisitos
+de la actividad y cotejar datos bibliográficos y DOI con las fichas
+editoriales. Codex también asistió en el piloto de Discord, preparó
+el borrador del mensaje de prueba en Zulip y tomó la captura después
+de que yo enviara el mensaje. En el Anexo B, Codex localizó los
+fragmentos y tomó las capturas de los PDF que yo resalté. La bitácora
+identifica los avances cuyos mensajes de commit redactó Codex.
+Para la figura de arquitectura, Codex preparó el archivo de draw.io
+a partir del bosquejo que dibujé y me ayudó a exportarlo.
+
+Verifiqué el resultado de la prueba principal al desconectar y
+reconectar mi laptop, enviar los mensajes desde el celular y comprobar
+en Chrome que reaparecieran en orden y sin recarga manual. Registré lo
+observado en la transcripción de PowerShell. Leí y marqué los pasajes
+de los tres artículos que se muestran en el Anexo B.
+Contrasté con Codex las referencias de Ferreira y de Bação y Guerreiro
+con los datos de Springer. Codex cotejó la referencia de Kokociński y
+colaboradores con la ficha de Elsevier y el PDF del artículo.
 
 \clearpage
 \printbibliography
@@ -328,8 +366,15 @@ Edge a partir de los PDF resaltados por Byron.
 \clearpage
 \appendix
 \section{Bosquejo inicial}
-\pendiente{Insertar la foto original del esquema a mano con nombre y fecha visibles.}
+\label{anexo:bosquejo}
 
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=\linewidth,height=0.80\textheight,keepaspectratio]{../evidencias/bosquejo/arquitectura-discord.png}
+  \caption{Bosquejo de la arquitectura de mensajes de Discord, dibujado a mano por Byron Daniel Loor Mendoza el 12 de noviembre de 2026.}
+\end{figure}
+
+\clearpage
 \section{Lectura de fuentes}
 
 \begin{figure}[!ht]

@@ -47,4 +47,9 @@
 - Byron envió ZULIP-M1 en el tema Prueba TA-IND-01 del canal general de la demo. Codex preparó el borrador del mensaje, comprobó que el mensaje siguiera visible al volver al tema y guardó la captura para el informe.
 - Codex ubicó los fragmentos de tres artículos citados para el Anexo B. Tras intentar marcarlos en Brave, Byron guardó el resaltado en los PDF de Ferreira (p. 14), Bação y Guerreiro (p. 4) y Kokociński (p. 11). Codex tomó en Edge las capturas con las marcas y el número de página visibles.
 - Codex redactó los mensajes de los commits de la prueba de Discord, el borrador comparativo y la incorporación de las lecturas. Los mensajes de autoría del estudiante se registran en sus propios commits.
-- Tiempo de trabajo personal: pendiente de registrar por Byron.
+- Byron compartió la foto del bosquejo que dibujó el 12 de noviembre. Codex incorporó el archivo original al Anexo A y añadió la referencia al bosquejo en la sección de arquitectura.
+- Se actualizó la declaración de uso de IA para precisar el apoyo de Codex y las comprobaciones que Byron realizó en el experimento y al marcar los artículos. Queda pendiente el cotejo personal de los DOI.
+- Codex preparó el diagrama editable a partir del bosquejo de Byron y ayudó a exportarlo e incorporarlo en la sección de arquitectura. Byron confirmó la facultad, el nivel, el paralelo y la fecha de la carátula.
+- Se cotejó el borrador con el encuadre de Aplicaciones Distribuidas. Se fijó el diagrama en la sección de arquitectura y se regeneró el PDF desde una copia limpia de los archivos del informe.
+- Byron contrastó con Codex las dos referencias de Springer. Codex comprobó los datos de Kokociński y colaboradores en la ficha de Elsevier y el PDF. Se precisó la conclusión sobre lo observado en Chrome y los límites de la prueba. Codex redactó el mensaje del commit de este avance.
+- La transcripción estuvo abierta desde las 23:39 del 12 de noviembre hasta las 00:43 del 13. La ventana registrada fue de 1 h 4 min. El tiempo de trabajo activo queda por confirmar con Byron.

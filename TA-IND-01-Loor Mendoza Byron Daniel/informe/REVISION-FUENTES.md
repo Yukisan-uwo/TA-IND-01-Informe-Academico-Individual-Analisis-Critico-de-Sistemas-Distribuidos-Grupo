@@ -24,14 +24,12 @@ Los identificadores 110, 158 y 104707 son números de artículo y se guardan com
 - `zulipSendingMessages`: explica el registro del mensaje y sus destinatarios en la base de datos y el envío del evento al sistema de entrega.
 - `zulipPostgresql`: documenta un despliegue con PostgreSQL en un servidor separado y la configuración de una réplica de respaldo. Cualquier análisis de recuperación debe indicar qué configuración se considera.
 
-## Verificaciones pendientes antes de entregar
+## Verificación de las referencias
 
-- Confirmar la indexación de Journal of Parallel and Distributed Computing en una fuente oficial. [Computing](https://link.springer.com/journal/607) y [Journal of Cloud Computing](https://link.springer.com/journal/13677/aims-and-scope) declaran SCIE.
-- Abrir personalmente cada DOI y contrastar los datos con el artículo, además de esta revisión asistida.
-- Revisar la fecha o versión de la documentación viva. La fecha de consulta es distinta de la fecha de publicación.
-- Conservar en la bibliografía final únicamente las obras citadas en el texto y compilar con biblatex en estilo IEEE.
-
-La bibliografía contiene once entradas. La selección final depende de las fuentes que se citen y de la comprobación de fechas e indexación.
+- [Computing](https://link.springer.com/journal/607) y [Journal of Cloud Computing](https://link.springer.com/journal/13677/aims-and-scope) declaran indexación en SCIE. La ficha de [TU Dresden](https://fis.tu-dresden.de/portal/en/journals/journal-of-parallel-and-distributed-computing%281cebe63a-2cbd-4f6d-8ce9-c08d29185bb5%29.html) identifica Journal of Parallel and Distributed Computing por su ISSN y recoge sus métricas de Scopus.
+- El 13 de noviembre Byron revisó con Codex la entrada de Ferreira, el PDF de Springer y el fragmento sobre el rendimiento de escritura en la página 14. En la misma sesión revisó la referencia de Bação y Guerreiro y el fragmento sobre publicación y suscripción a eventos en la página 4.
+- En esa sesión, Codex cotejó los datos de Kokociński et al. con la ficha editorial y la primera página del PDF. También comprobó que el fragmento resaltado en la página 11 describe la pérdida de una actualización ya confirmada u observada tras el fallo de una réplica. ScienceDirect mostró una verificación de acceso al abrir el DOI en el navegador. [Ficha editorial](https://www.sciencedirect.com/science/article/abs/pii/S0743731523000709) · [PDF alojado por el autor](https://www.cs.put.poznan.pl/pawelw/pdf/jpdc23-journal.pdf)
+- La bibliografía contiene once obras citadas y se compila con biblatex en estilo IEEE. La documentación que se mantiene en línea lleva su fecha de consulta.
 
 ## Páginas para el Anexo B
 
