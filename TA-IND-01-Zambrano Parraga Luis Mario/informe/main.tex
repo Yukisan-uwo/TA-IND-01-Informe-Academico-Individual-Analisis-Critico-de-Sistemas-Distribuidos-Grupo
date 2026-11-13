@@ -1,0 +1,227 @@
+% TA-IND-01, documento de TRABAJO: no presentar como version final.
+% Estructura real: carpeta personal / informe / main.tex + referencias.bib.
+% Compilar DESDE informe/: pdflatex main.tex, biber main, pdflatex main.tex, pdflatex main.tex.
+% Completar los campos [POR VERIFICAR], anexos, incidente y experiencias personales.
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{csquotes}
+\usepackage{mathptmx}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\usepackage{titlesec}
+\titleformat{\section}{\bfseries\fontsize{15}{18}\selectfont}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\bfseries\fontsize{12.5}{15}\selectfont}{\thesubsection.}{0.6em}{}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,columns=fullflexible,keepspaces=true,showstringspaces=false}
+\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
+\addbibresource{referencias.bib}
+\usepackage[hidelinks]{hyperref}
+\urlstyle{same}
+\newcommand{\revision}[1]{\textcolor{red!75!black}{\textbf{[POR VERIFICAR: #1]}}}
+% Un archivo ausente NO se simula como evidencia. Se muestra aviso visible.
+\newcommand{\evidencia}[2]{%
+\IfFileExists{#1}{\includegraphics[width=\linewidth,height=#2,keepaspectratio]{#1}}%
+{\fbox{\parbox[c][2.4cm][c]{0.92\linewidth}{\centering\small\textbf{EVIDENCIA NO DISPONIBLE EN ESTA COPIA}\\\texttt{\detokenize{#1}}}}}%
+}
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+{\Large\bfseries Universidad Técnica Estatal de Quevedo\par}
+\vspace{0.4cm}
+{\large Facultad: \revision{confirmar denominacion oficial}\par}
+{\large Carrera: \revision{confirmar denominacion oficial}\par}
+\vspace{1.8cm}
+{\large Asignatura: Aplicaciones Distribuidas\par}
+{\large Actividad: TA-IND-01 --- Informe Académico Individual\par}
+\vspace{1.6cm}
+{\LARGE\bfseries Análisis crítico de RabbitMQ como sistema distribuido de mensajería: comparación con Apache Kafka\par}
+\vspace{1.7cm}
+{\large Estudiante: Luis Mario Zambrano Párraga\par}
+{\large Paralelo: \revision{confirmar paralelo}\par}
+{\large Fecha de entrega: \revision{indicar fecha real}\par}
+\vfill
+\begin{minipage}{0.96\linewidth}\centering\small
+Repositorio público: \revision{pegar URL exacta a la carpeta individual del repositorio grupal}
+\end{minipage}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section*{Resumen}
+RabbitMQ permite intercambiar mensajes entre aplicaciones mediante un intermediario que desacopla la publicación del consumo. En este informe se examina su arquitectura distribuida y se compara con Apache Kafka utilizando artículos científicos recientes, además de pruebas ejecutadas sobre tres nodos RabbitMQ 4.2.9 en contenedores Docker. El análisis considera las transparencias de distribución, la comunicación asíncrona, CAP, PACELC y la tolerancia a fallos de una cola de quórum. En el laboratorio se publicaron y recuperaron mensajes con aplicaciones Python que utilizaron confirmaciones del productor y del consumidor. Después de detener al líder inicial, otro nodo asumió el liderazgo y fue posible recuperar cinco mensajes. Al detener dos miembros, el nodo restante quedó sin líder operativo; al recuperar la mayoría, los mensajes continuaron disponibles y fueron consumidos. Estos resultados muestran la utilidad de la replicación basada en mayoría, pero también su límite de disponibilidad. La comparación bibliográfica sugiere que RabbitMQ y Kafka responden a necesidades diferentes, por lo que no puede recomendarse uno de forma universal. El experimento no incluyó particiones de red reales ni mediciones de latencia.
+
+\textbf{Palabras clave:} RabbitMQ, consenso Raft, cola de quórum, tolerancia a fallos, mensajería asíncrona, Apache Kafka.
+
+\section{Introducción}
+En una aplicación distribuida, productores y consumidores no siempre se ejecutan al mismo tiempo ni tienen la misma capacidad de procesamiento. Un broker de mensajes permite recibir información, dirigirla a una cola y entregarla cuando otro componente pueda atenderla. Maharjan et al. explican ese desacoplamiento y comparan diferentes tecnologías de mensajería, entre ellas RabbitMQ y Apache Kafka \cite{Maharjan2023}. El caso estudiado es RabbitMQ, un broker que implementa un modelo de intercambios (\emph{exchanges}), colas y consumidores; la comparación se realiza frente a Kafka, plataforma orientada a registros de eventos y consumo de flujos.
+
+Se escogió RabbitMQ porque puede desplegarse en un laboratorio local, permite examinar tanto el tráfico de mensajes como el estado de los miembros de una cola replicada y hace visibles las consecuencias de detener nodos. En el trabajo se utilizó una única computadora con tres contenedores, de modo que el alcance es un fallo controlado de procesos y no un despliegue en centros de datos separados. El informe combina las fuentes citadas, las salidas de los comandos del repositorio y una discusión de los límites del diseño. \revision{Sustentar con una fuente o caso verificable quienes utilizan RabbitMQ y a que escala real opera; no inventar cantidades de usuarios ni empresas.}
+
+\section{Arquitectura del sistema}
+\subsection{Componentes y recorrido de los mensajes}
+En RabbitMQ, el productor publica un mensaje a un \emph{exchange}; los \emph{bindings} determinan las colas de destino y un consumidor obtiene posteriormente el contenido. Esa separación entre enrutamiento y consumo se describe en el estudio de Maharjan et al. \cite{Maharjan2023}. En el experimento, el programa \texttt{productor.py} publicó en el exchange predeterminado (\texttt{exchange=""}), usando como clave el nombre \texttt{taind01\_mensajes}; \texttt{consumidor.py} consultó la misma cola.
+
+La comunicación del cliente con el broker se realizó mediante AMQP 0-9-1 sobre TCP. Internamente, el clúster mantuvo tres miembros de una \emph{quorum queue}, con un líder y dos seguidores. El componente lógico ``cola'' no debe confundirse con tres colas independientes: es una cola replicada entre tres nodos. El equipo anfitrión, en cambio, siguió siendo un único punto de fallo físico.
+
+\begin{figure}[H]
+\centering
+\evidencia{../diagramas/arquitectura-rabbitmq.png}{0.39\textheight}
+\caption{Diagrama definitivo de la arquitectura del laboratorio (elaboración propia, a incorporar desde draw.io o TikZ).}
+\label{fig:arquitectura}
+\end{figure}
+\revision{Describir diferencias entre el bosquejo manuscrito y la figura definitiva una vez que el diagrama este terminado; no inventar su evolucion.}
+
+\section{Análisis con los conceptos de la Unidad 1}
+\subsection{Transparencias de distribución}
+La transparencia no significa que los nodos dejen de existir, sino que determinados detalles de la distribución dejan de ser responsabilidad directa del usuario o de la aplicación. El trabajo de Chalabi y Slimani describe acceso, ubicación, concurrencia, fallos, replicación y migración en sistemas distribuidos de almacenamiento \cite{Chalabi2026}. Estas definiciones sirven de marco conceptual, pero no prueban por sí mismas que RabbitMQ ofrezca las mismas garantías. Para la reubicación durante el uso se considera también el principio de continuidad estudiado en la migración en vivo, sin confundir esa técnica con una elección de líder \cite{AttarKhorasani2026}.
+
+\begin{table}[H]\centering\footnotesize
+\caption{Evaluación provisional de siete transparencias en el laboratorio RabbitMQ.}
+\begin{tabularx}{\linewidth}{@{}p{2.25cm}p{2cm}X@{}}\toprule
+Transparencia & Evaluación & Evidencia y límite de la afirmación \\\midrule
+Acceso & Parcial & El cliente usa Pika/AMQP, pero requiere biblioteca, dirección y credenciales. \\
+Ubicación & Parcial & El acceso a la cola es posible desde un nodo distinto del líder; el cliente conoce un endpoint concreto. \\
+Migración & No evaluada & No se trasladó un recurso entre máquinas durante las pruebas. \\
+Reubicación & No demostrada & La elección de \texttt{rabbit3} no equivale a mover una sesión activa sin interrupción. \\
+Replicación & Parcial & Se verificaron tres miembros y sus índices; la administración sigue mostrando las réplicas. \\
+Concurrencia & No evaluada & La prueba serial de cinco mensajes no es una carga concurrente. \\
+Fallos & Parcial & La cola siguió operando con dos miembros, pero el consumidor necesitó cambiar de puerto. \\\bottomrule
+\end{tabularx}\label{tab:transparencias}
+\end{table}
+
+La evaluación es deliberadamente acotada: afirmar que una transparencia existe en todo el producto exigiría probar configuraciones adicionales (reconexión automática, balanceador, productores concurrentes o migración real). En nuestro consumidor, la conexión original al puerto \texttt{5672} no cambió automáticamente cuando se detuvo \texttt{rabbit1}; fue necesario usar \texttt{5673}.
+
+\subsection{CAP y PACELC}
+El teorema CAP describe el compromiso entre consistencia y disponibilidad \emph{durante una partición de red}, mientras que PACELC añade la comparación entre latencia y consistencia cuando el sistema funciona sin particiones. Ahmed et al. revisan ambos compromisos en sistemas replicados \cite{Ahmed2023}. No es correcto reducirlos a una clasificación invariable de toda aplicación que incorpore un broker: importa el componente y el tipo de operación.
+
+Nuestra unidad de análisis es la cola \emph{quorum}, que se apoya en una mayoría de réplicas. Tras detener a dos de sus tres miembros, el estado consultado en \texttt{rabbit1} fue \texttt{pre\_vote} y no apareció un líder operativo. Ese resultado es coherente con un diseño que evita continuar operando sin quórum para conservar las garantías del registro replicado. \textbf{No se produjo una partición de red}: el experimento demuestra pérdida de nodos, no una medición directa de CAP bajo particiones.
+
+En la situación \emph{else} de PACELC, coordinar réplicas y esperar confirmaciones puede tener un costo temporal. Sin embargo, no se ejecutaron pruebas de latencia entre diferentes políticas de consistencia; por ello, el informe no presenta una cifra propia ni adjudica a RabbitMQ una etiqueta PACELC universal. Los estudios comparativos citados miden otras configuraciones y tampoco sustituyen esa prueba específica.
+
+\subsection{Modelos y mecanismos de comunicación}
+Desde las aplicaciones, la interacción es principalmente \textbf{productor--broker--consumidor}: el productor entrega un mensaje al broker, sin esperar el procesamiento inmediato del consumidor. Los mensajes se conservaron pendientes con cero consumidores conectados, como muestran las capturas 07 y 08. La publicación y recuperación se realizan mediante el protocolo de mensajería AMQP; a su vez, la infraestructura del clúster intercambia información entre nodos para coordinar las réplicas. Por ello, la arquitectura tiene relaciones cliente--servidor en el borde y cooperación entre nodos dentro del clúster; no debe describirse globalmente como un sistema de aplicaciones peer-to-peer.
+
+Las confirmaciones del publicador y las del consumidor responden a preguntas distintas. El productor activó \path{confirm_delivery()} y registró cinco publicaciones confirmadas. Por su parte, el consumidor recuperó los mensajes sin confirmación automática (\path{auto_ack=False}) y después ejecutó \path{basic_ack()}. Una confirmación de publicación no demuestra que el consumidor ya haya terminado el trabajo.
+
+\subsection{Tolerancia a fallos, replicación y consenso}
+Raft organiza sus miembros en estados de líder, seguidor y candidato, y utiliza un registro replicado cuya confirmación depende de una mayoría. Zhang et al. describen estas propiedades al estudiar FlexRaft, una propuesta derivada de Raft \cite{Zhang2024FlexRaft}; esa variante no es el algoritmo que declaramos haber instalado en RabbitMQ.
+
+En la primera secuencia de fallo, \texttt{rabbit1} era líder; al detenerlo, \texttt{rabbit3} pasó a líder y \texttt{rabbit2} permaneció como seguidor. Los cinco mensajes que estaban pendientes se recuperaron conectando el consumidor a \texttt{rabbit2}. Más tarde, con \texttt{rabbit2} y \texttt{rabbit3} detenidos, \texttt{rabbit1} quedó en \texttt{pre\_vote}, sin líder operativo. Al reiniciar \texttt{rabbit3}, reaparecieron los cinco mensajes pendientes; después de consumirlos y reiniciar \texttt{rabbit2}, las tres réplicas mostraron \texttt{Commit Index = 70}.
+
+Estos resultados sostienen una conclusión limitada pero concreta: la cola soportó un fallo individual de contenedor y recuperó las operaciones al volver a existir una mayoría. No demuestran tolerancia a la caída simultánea de la computadora física ni entrega exactamente una vez para cualquier patrón de fallos.
+
+\revision{Incidente real externo: elegir un reporte de produccion verificable, indicar fecha, impacto, causa respaldada y relacion con el experimento; no sustituirlo por una simulacion.}
+
+\section{Experimentación propia}
+\subsection{Entorno y procedimiento reproducible}
+Se utilizó Windows con Docker Desktop, tres contenedores de RabbitMQ 4.2.9 (Erlang 27.3.4.19), Python 3.11.9 y Pika 1.4.4. El archivo \path{../experimento/docker-compose.yml} describe los nodos; las instrucciones de recreación, comandos y registros están en \path{../experimento/README.md} y \path{../experimento/resultados/}. Los tres nodos compartieron una misma computadora anfitriona.
+
+La secuencia comprendió: iniciar los nodos, formar el clúster, crear la cola de quórum, publicar y consumir mensajes, detener el líder, recuperar mensajes desde otro nodo, provocar la pérdida de mayoría y finalmente reiniciar los nodos. No se eliminó ningún volumen durante las recuperaciones. El detalle de cada operación se conserva en el repositorio para facilitar la reproducción del procedimiento, no solo la lectura de las capturas.
+
+\subsection{Resultados y evidencias}
+\begin{table}[H]\centering\footnotesize
+\caption{Resultados observados en las pruebas de laboratorio.}
+\begin{tabularx}{\linewidth}{@{}p{3.2cm}X p{2.1cm}@{}}\toprule
+Prueba & Resultado observado & Capturas \\\midrule
+Mensajería desde Python & 5 publicaciones confirmadas y 5 consumos con ACK manual; cola vacía al terminar. & 09--12 \\
+Caída del primer líder & \texttt{rabbit3} fue elegido líder; los cinco mensajes se consumieron con \texttt{rabbit1} detenido. & 13--17 \\
+Reincorporación & \texttt{rabbit1} regresó como seguidor; los tres miembros alcanzaron índice 51. & 18--19 \\
+Pérdida de mayoría & Con un solo miembro activo apareció \texttt{pre\_vote}; no se observó líder operativo. & 20--23 \\
+Recuperación final & Al recuperar la mayoría permanecían cinco mensajes; se consumieron y las réplicas llegaron al índice 70. & 24--27 \\\bottomrule
+\end{tabularx}\label{tab:resultados}
+\end{table}
+
+\begin{figure}[H]\centering
+\evidencia{../experimento/capturas/15-nuevo-lider.png}{0.30\textheight}
+\caption{Estado de Raft después de detener \texttt{rabbit1}: \texttt{rabbit3} aparece como líder. Captura original del laboratorio.}\label{fig:nuevolider}
+\end{figure}
+\begin{figure}[H]\centering
+\evidencia{../experimento/capturas/23-estado-sin-quorum.png}{0.30\textheight}
+\caption{Estado \texttt{pre\_vote} del único miembro disponible tras detener dos contenedores. Captura original.}\label{fig:sinmayoria}
+\end{figure}
+
+\subsection{Interpretación y límites}
+La primera recuperación muestra \emph{continuidad de la cola} con una mayoría activa; la segunda muestra la dependencia de esa mayoría. El último resultado no es un tiempo de recuperación: no se cronometró la elección del líder ni se midió latencia de publicación o consumo. Los cinco mensajes procesados después de cada recuperación estaban pendientes y confirmados previamente; no se ensayó un consumidor interrumpido antes de enviar su ACK ni una partición de red.
+
+\section{Ejemplos del entorno del estudiante}
+\revision{Falta el primer ejemplo REAL vivido: sistema utilizado, hecho observado como usuario, fecha o contexto y concepto de la unidad. No inventar experiencias personales.}
+
+\revision{Falta el segundo ejemplo REAL y distinto: sistema utilizado, hecho observado como usuario y relacion con una transparencia, comunicacion o fallo. Se puede agregar un tercero o cuarto autentico.}
+
+\section{Análisis comparativo: RabbitMQ y Apache Kafka}
+Los estudios de Maharjan et al., Pacella et al. y Kamiński et al. comparan brokers bajo distintas configuraciones \cite{Maharjan2023,Pacella2025,Kaminski2025}. La evidencia de rendimiento no puede extrapolarse como una superioridad universal: en los escenarios de Pacella et al., para 10\,000 mensajes Kafka obtuvo 713,25 publicaciones por segundo frente a 626,34 de RabbitMQ, mientras que RabbitMQ alcanzó 2169,57 consumos por segundo frente a 1895,80 de Kafka. Estas cifras pertenecen a ese estudio, no a nuestra instalación.
+
+\begin{table}[H]\centering\scriptsize
+\caption{Comparación conceptual de dos sistemas de mensajería; cada resultado debe leerse en su contexto.}
+\begin{tabularx}{\linewidth}{@{}p{2.55cm}XX@{}}\toprule
+Criterio & RabbitMQ (cola de quórum) & Apache Kafka \\\midrule
+Modelo principal & Broker, exchanges y colas. & Registro de eventos distribuido, topics y particiones. \\
+Enrutamiento & Bindings y routing keys hacia colas. & Publicaciones dirigidas a topics/particiones. \\
+Consumo & Mensajes entregados y confirmados por consumidor. & Lectura de registros con gestión de offsets. \\
+Replicación & Miembros de cola y consenso Raft para el caso estudiado. & Replicación de particiones y líderes; configuración independiente. \\
+Fallo de un nodo & Con 3 miembros, un fallo fue tolerado en nuestro laboratorio. & Depende del factor de replicación y de las réplicas disponibles; no se probó aquí. \\
+Pérdida de mayoría & La cola estudiada quedó sin líder operativo. & No se ensayó una caída equivalente en Kafka. \\
+Desempeño & No medido localmente; varía según carga y entorno. & No medido localmente; los estudios externos presentan ventajas según carga. \\
+Uso más pertinente & Tareas, enrutamiento de mensajes y confirmación de trabajos. & Eventos reproducibles, flujos y altas tasas de procesamiento, según necesidades. \\\bottomrule
+\end{tabularx}\label{tab:comparacion}
+\end{table}
+
+No hay comparación experimental directa en nuestro laboratorio, porque solo se ejecutó RabbitMQ. La tabla es una síntesis crítica de propiedades y resultados bibliográficos, mientras que la evidencia local se limita al comportamiento de la cola de quórum. Esta diferencia metodológica impide convertir el ensayo de cinco mensajes en una evaluación de rendimiento RabbitMQ--Kafka.
+
+\section{Postura crítica}
+Una fortaleza observada de RabbitMQ fue mantener disponibles los mensajes confirmados cuando se detuvo un miembro y conservarlos durante la pérdida temporal de mayoría. La replicación y la elección de líder hacen posible ese comportamiento, pero también introducen una condición: sin quórum, la cola no puede continuar con sus garantías normales. Se trata de un compromiso relevante para aplicaciones que requieren continuidad y seguridad de datos simultáneamente.
+
+Otra limitación procede del cliente: nuestro consumidor tenía inicialmente un único endpoint y fue necesario redirigirlo manualmente a otro puerto. Un entorno de producción necesitaría estudiar la reconexión del cliente, el descubrimiento de nodos o un balanceador. Tampoco sería apropiado recomendar este laboratorio como prueba de alta disponibilidad física, pues los tres contenedores estaban en un solo equipo. Kamiński et al. muestran además que los resultados de rendimiento dependen del entorno de software, reforzando la necesidad de comparar requisitos concretos en lugar de elegir un broker por popularidad \cite{Kaminski2025}.
+
+\section{Conclusiones}
+Las pruebas muestran que una cola de quórum RabbitMQ de tres miembros permitió recuperar cinco mensajes confirmados después de detener al líder original. Al quedar un solo miembro activo, no se observó un líder operativo, y al recuperar dos miembros los mensajes se mantuvieron disponibles. Las tres réplicas alcanzaron posteriormente el mismo índice de confirmación, sin que ello implique tolerancia a la caída de toda la computadora.
+
+La comunicación asíncrona quedó respaldada por mensajes almacenados sin consumidores y por programas Python que utilizaron confirmaciones de publicación y consumo separadas. La comparación bibliográfica con Kafka muestra diferencias de diseño y resultados dependientes de la carga, pero no reemplaza una evaluación experimental de ambos sistemas. Por tanto, el análisis respalda la utilidad de RabbitMQ para mensajería replicada y al mismo tiempo identifica los límites derivados del quórum y de la conexión del cliente.
+
+\section*{Declaración de uso de inteligencia artificial}
+Durante la preparación del trabajo se utilizó ChatGPT (OpenAI, GPT-6) como apoyo para organizar tareas, proponer comandos y programas de laboratorio, revisar metadatos bibliográficos y preparar borradores de texto y LaTeX. Las capturas del sistema y los registros de comandos corresponden a ejecuciones efectuadas en el entorno experimental del estudiante; el documento debe revisarse y adaptarse antes de presentarlo. La validación final exige contrastar cada DOI con la publicación editorial, comprobar los comandos contra los archivos del repositorio y corregir cualquier afirmación que no esté respaldada por una fuente o una observación propia.
+
+\revision{Confirmar y ajustar esta declaración según el uso efectivo realizado por el estudiante; no afirmar verificaciones todavía pendientes.}
+
+\printbibliography[title={Referencias}]
+\clearpage
+\appendix
+\section*{Anexo A. Bosquejo inicial de la arquitectura}
+\begin{figure}[H]\centering
+\evidencia{../diagramas/boceto-inicial.jpg}{0.72\textheight}
+\caption{Bosquejo manuscrito con nombre y fecha reales; mostrar su relación con el diagrama definitivo.}
+\end{figure}
+
+\section*{Anexo B. Lecturas anotadas de los artículos citados}
+\newcommand{\lecturacap}[3]{\begin{figure}[H]\centering\evidencia{../bibliografia/capturas-lectura/#1}{0.65\textheight}\caption{#2. #3.}\end{figure}}
+\lecturacap{01-maharjan-p300.png}{Maharjan et al. (2023), p. 300}{Desacoplamiento temporal; \cite{Maharjan2023}}
+\lecturacap{02-maharjan-p301-arquitectura.png}{Maharjan et al. (2023), p. 301}{Exchanges, colas y bindings; \cite{Maharjan2023}}
+\lecturacap{03-pacella-p10-comparacion.png}{Pacella et al. (2025), p. 10 del PDF}{Comparación experimental; \cite{Pacella2025}}
+\lecturacap{04-ahmed-cap.png}{Ahmed et al. (2023), sección 1.1}{Compromiso CAP; \cite{Ahmed2023}}
+\lecturacap{05-ahmed-pacelc.png}{Ahmed et al. (2023), sección 1.2}{PACELC; \cite{Ahmed2023}}
+\lecturacap{06-zhang-p1828-raft.png}{Zhang et al. (2024), p. 1828}{Raft; \cite{Zhang2024FlexRaft}}
+\lecturacap{07-chalabi-transparencias.png}{Chalabi y Slimani (2026), introducción}{Transparencias; \cite{Chalabi2026}}
+\lecturacap{08-kaminski-p462-limitaciones.png}{Kamiński et al. (2025), p. 462}{Compromisos del broker; \cite{Kaminski2025}}
+\lecturacap{09-attar-khorasani-reubicacion.png}{Attar-Khorasani et al. (2026), introducción}{Migración en vivo como concepto relacionado; \cite{AttarKhorasani2026}}
+\end{document}
