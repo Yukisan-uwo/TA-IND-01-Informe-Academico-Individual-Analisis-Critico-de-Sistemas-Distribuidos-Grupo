@@ -1,0 +1,171 @@
+RESULTADOS DEL EXPERIMENTO - Elasticsearch 8.15.0 (clúster de 3 nodos con Docker Compose)
+Usuario: desktop-3i23bek\asus | Máquina: DESKTOP-3I23BEK
+Fecha de ejecución: 13/11/2026
+
+=====================================================================
+1. Levantar el cluster
+=====================================================================
+Comandos:
+docker compose up -d
+docker ps
+whoami; hostname; date; curl.exe "localhost:9200/_cat/nodes?v"; curl.exe "localhost:9200/_cluster/health?pretty"
+
+Nota: el primer intento de "docker compose up -d" falló porque Docker Desktop no estaba abierto
+("failed to connect to the docker API"). Lo abrí y repetí el comando.
+
+Salida de docker compose up -d:
+[+] up 18/18
+ Image docker.elastic.co/elasticsearch/elasticsearch:8.15.0   Pulled    138.8s
+ Network experimento_elastic                                  Created   0.4s
+ Volume experimento_data02                                    Created   0.1s
+ Volume experimento_data03                                    Created   0.0s
+ Volume experimento_data01                                    Created   0.0s
+ Container es02                                               Started   5.5s
+ Container es03                                               Started   5.9s
+ Container es01                                               Started   5.5s
+
+Salida de docker ps:
+CONTAINER ID   IMAGE                                                  COMMAND                  CREATED         STATUS         PORTS                                         NAMES
+1269c1e73dde   docker.elastic.co/elasticsearch/elasticsearch:8.15.0   "/bin/tini -- /usr/l…"   2 minutes ago   Up 2 minutes   0.0.0.0:9200->9200/tcp, [::]:9200->9200/tcp   es01
+ec7dc31d6e64   docker.elastic.co/elasticsearch/elasticsearch:8.15.0   "/bin/tini -- /usr/l…"   2 minutes ago   Up 2 minutes   0.0.0.0:9201->9200/tcp, [::]:9201->9200/tcp   es02
+dd2c7931d256   docker.elastic.co/elasticsearch/elasticsearch:8.15.0   "/bin/tini -- /usr/l…"   2 minutes ago   Up 2 minutes   0.0.0.0:9202->9200/tcp, [::]:9202->9200/tcp   es03
+
+Salida de nodos y salud (viernes, 13 de noviembre de 2026 1:01:43):
+ip         heap.percent ram.percent cpu load_1m load_5m load_15m node.role   master name
+172.18.0.4           32          99   3    1.41    2.93     1.54 cdfhilmrstw -      es03
+172.18.0.3           36          99   3    1.41    2.93     1.54 cdfhilmrstw -      es01
+172.18.0.2           22          99   3    1.41    2.93     1.54 cdfhilmrstw *      es02
+{
+  "cluster_name" : "es-cluster",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 3,
+  "number_of_data_nodes" : 3,
+  "active_primary_shards" : 0,
+  "active_shards" : 0,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 100.0
+}
+
+Interpretación:
+El clúster se inició correctamente con Docker. Los 3 nodos están activos, es02 es el maestro y el estado del clúster es green
+
+=====================================================================
+2. Índice de pruebas, distribución de sharts
+=====================================================================
+Comandos:
+Set-Content indice.json '{"settings":{"number_of_shards":3,"number_of_replicas":1}}' -Encoding ascii
+curl.exe -X PUT "localhost:9200/pruebas" -H "Content-Type: application/json" -d "@indice.json"
+1..6 | ForEach-Object { Set-Content doc.json ('{"mensaje":"documento ' + $_ + '"}') -Encoding ascii; curl.exe -s -X POST "localhost:9200/pruebas/_doc" -H "Content-Type: application/json" -d "@doc.json" }
+whoami; hostname; date; curl.exe "localhost:9200/_cat/shards/pruebas?v"
+curl.exe -X POST "localhost:9200/pruebas/_refresh"
+whoami; hostname; date; curl.exe "localhost:9200/_cat/shards/pruebas?v"
+
+Salida de la creación del índice:
+{"acknowledged":true,"shards_acknowledged":true,"index":"pruebas"}
+
+Salida de las 6 inserciones: cada una devolvió "result":"created" con "_shards":{"total":2,"successful":2,"failed":0}.
+
+Salida de _cat/shards antes del refresh (viernes, 13 de noviembre de 2026 1:26:36):
+index   shard prirep state   docs store dataset ip         node
+pruebas 0     p      STARTED    0  227b    227b 172.18.0.3 es01
+pruebas 0     r      STARTED    0  227b    227b 172.18.0.4 es03
+pruebas 1     p      STARTED    0  227b    227b 172.18.0.4 es03
+pruebas 1     r      STARTED    0  227b    227b 172.18.0.2 es02
+pruebas 2     r      STARTED    0  227b    227b 172.18.0.3 es01
+pruebas 2     p      STARTED    0  227b    227b 172.18.0.2 es02
+
+Salida del refresh:
+{"_shards":{"total":6,"successful":6,"failed":0}}
+
+Salida de _cat/shards después del refresh (viernes, 13 de noviembre de 2026 1:28:35):
+index   shard prirep state   docs store dataset ip         node
+pruebas 0     p      STARTED    1 4.7kb   4.7kb 172.18.0.3 es01
+pruebas 0     r      STARTED    1 4.7kb   4.7kb 172.18.0.4 es03
+pruebas 1     p      STARTED    3 4.9kb   4.9kb 172.18.0.4 es03
+pruebas 1     r      STARTED    3 4.9kb   4.9kb 172.18.0.2 es02
+pruebas 2     r      STARTED    2 4.8kb   4.8kb 172.18.0.3 es01
+pruebas 2     p      STARTED    2 4.8kb   4.8kb 172.18.0.2 es02
+
+Interpretación:
+Se creó el índice pruebas con 3 shards y sus réplicas. Se insertaron correctamente 6 documentos, todos respaldados en otro nodo. Tras el refresh, se confirmó que los 6 documentos están distribuidos y que las réplicas funcionan correctamente.
+
+=====================================================================
+3. Caída del nodo es02
+=====================================================================
+Comandos:
+docker stop es02
+whoami; hostname; date; curl.exe "localhost:9200/_cat/nodes?v"
+whoami; hostname; date; curl.exe "localhost:9200/_cluster/health?pretty"
+whoami; hostname; date; curl.exe "localhost:9200/_cat/shards/pruebas?v"
+
+Nota: el primer intento combinado de los comandos de salud y shards se cortó al pegarlo
+("curl: try 'curl --help'") y lo repetí por separado.
+
+Salida de _cat/nodes (viernes, 13 de noviembre de 2026 1:35:52):
+ip         heap.percent ram.percent cpu load_1m load_5m load_15m node.role   master name
+172.18.0.3           33          86   1    0.28    0.11     0.22 cdfhilmrstw -      es01
+172.18.0.4           30          86   1    0.28    0.11     0.22 cdfhilmrstw *      es03
+
+Salida de _cluster/health (viernes, 13 de noviembre de 2026 1:40:52):
+{
+  "cluster_name" : "es-cluster",
+  "status" : "green",
+  "timed_out" : false,
+  "number_of_nodes" : 2,
+  "number_of_data_nodes" : 2,
+  "active_primary_shards" : 3,
+  "active_shards" : 6,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 0,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 100.0
+}
+
+Salida de _cat/shards (viernes, 13 de noviembre de 2026 1:40:58):
+index   shard prirep state   docs store dataset ip         node
+pruebas 0     r      STARTED    1 4.8kb   4.8kb 172.18.0.4 es03
+pruebas 0     p      STARTED    1 4.8kb   4.8kb 172.18.0.3 es01
+pruebas 1     p      STARTED    3   5kb     5kb 172.18.0.4 es03
+pruebas 1     r      STARTED    3   5kb     5kb 172.18.0.3 es01
+pruebas 2     r      STARTED    2 4.9kb   4.9kb 172.18.0.4 es03
+pruebas 2     p      STARTED    2 4.9kb   4.9kb 172.18.0.3 es01
+
+Interpretación:
+Al detener es02, es03 asumió como maestro. El clúster siguió en estado green, con todos los shards y réplicas activos. Los datos continuaron disponibles sin pérdidas.
+
+=====================================================================
+4. Recuperación del nodo es02
+=====================================================================
+Comandos:
+docker start es02
+whoami; hostname; date; curl.exe "localhost:9200/_cat/nodes?v"
+whoami; hostname; date; curl.exe "localhost:9200/_cat/shards/pruebas?v"
+
+Salida de _cat/nodes (viernes, 13 de noviembre de 2026 1:43:47):
+ip         heap.percent ram.percent cpu load_1m load_5m load_15m node.role   master name
+172.18.0.4           59          98   4    1.07    0.40     0.27 cdfhilmrstw *      es03
+172.18.0.3           59          98   4    1.07    0.40     0.27 cdfhilmrstw -      es01
+172.18.0.2           18          98  20    1.07    0.40     0.27 cdfhilmrstw -      es02
+
+Salida de _cat/shards (viernes, 13 de noviembre de 2026 1:43:56):
+index   shard prirep state   docs store dataset ip         node
+pruebas 0     p      STARTED    1 4.8kb   4.8kb 172.18.0.3 es01
+pruebas 0     r      STARTED    1 4.8kb   4.8kb 172.18.0.4 es03
+pruebas 1     r      STARTED    3   5kb     5kb 172.18.0.2 es02
+pruebas 1     p      STARTED    3   5kb     5kb 172.18.0.4 es03
+pruebas 2     p      STARTED    2 4.9kb   4.9kb 172.18.0.3 es01
+pruebas 2     r      STARTED    2 4.9kb   4.9kb 172.18.0.2 es02
+
+Interpretación:
+Al reiniciar es02, volvió a unirse al clúster y se redistribuyeron los shards entre los 3 nodos. Todo quedó en estado STARTED, sin pérdida de datos y con la redundancia restablecida.
