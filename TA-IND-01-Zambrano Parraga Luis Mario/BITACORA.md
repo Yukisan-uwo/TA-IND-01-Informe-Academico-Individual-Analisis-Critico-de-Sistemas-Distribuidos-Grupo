@@ -73,3 +73,44 @@ Aproximadamente 2 horas y 30 minutos.
 **Dificultades:** no tuve dificultades esta vez.
 
 **Tiempo adicional dedicado:** 1 hora.
+
+
+## 13 de noviembre de 2026
+
+### Actividades realizadas
+
+- Continué las pruebas de tolerancia a fallos del clúster RabbitMQ.
+- Modifiqué el consumidor Python para permitir la conexión a distintos nodos mediante la variable `RABBITMQ_PORT`.
+- Recuperé cinco mensajes desde `rabbit2` mientras `rabbit1` permanecía detenido.
+- Reinicié `rabbit1` y comprobé su reincorporación a la cola de quórum.
+- Realicé una prueba de pérdida de mayoría, deteniendo primero `rabbit2` y después `rabbit3`.
+- Consulté el estado de Raft cuando solamente quedó un nodo activo.
+- Reinicié `rabbit3` para restablecer la mayoría.
+- Comprobé que los cinco mensajes permanecían pendientes después de la recuperación.
+- Consumí los cinco mensajes y reinicié `rabbit2`.
+- Verifiqué nuevamente los índices de las tres réplicas.
+
+### Problemas y comportamientos observados
+
+Al detener dos de los tres nodos, la cola perdió la mayoría necesaria para elegir un líder operativo. El nodo restante apareció en estado `pre_vote`.
+
+### Solución y recuperación
+
+Reinicié `rabbit3` sin eliminar los volúmenes ni restablecer la configuración. El clúster recuperó la mayoría y volvió a mostrar un líder operativo. Posteriormente inicié `rabbit2` para completar la recuperación.
+
+### Resultados obtenidos
+
+- La cola continuó disponible después de la primera caída del líder.
+- Los cinco mensajes publicados antes de ese fallo pudieron consumirse desde otro nodo.
+- Con dos nodos detenidos, no existía un líder operativo para la cola de quórum.
+- Al recuperar la mayoría, se conservaron los cinco mensajes pendientes.
+- Los cinco mensajes fueron procesados con confirmaciones manuales.
+- Después de reincorporar todos los nodos, las tres réplicas alcanzaron el índice de confirmación 70.
+
+### Evidencias
+
+Se conservaron las capturas y los registros de las pruebas de tolerancia a fallos, pérdida de mayoría, recuperación y sincronización en `experimento/capturas/` y `experimento/resultados/`.
+
+### Tiempo dedicado
+
+2 horas y 40 minutos aproximadamente
