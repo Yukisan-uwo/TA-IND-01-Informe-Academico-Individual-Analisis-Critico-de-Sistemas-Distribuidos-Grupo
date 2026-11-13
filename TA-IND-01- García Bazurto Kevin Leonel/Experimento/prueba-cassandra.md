@@ -182,7 +182,7 @@ docker exec taind-cas1 nodetool status
 comprobar que el clúster lo ve como caído (`DN`). Después repetí las lecturas
 con `ONE` y `QUORUM` desde `cqlsh`.
 
-**Resultado observado:** [Completar con lo que devolvió cada consulta en la captura 3.]
+**Resultado observado:**
 
 [Captura 3. Lecturas con dos réplicas activas](../Evidencias/03-lecturas-dos-replicas.png)
 
