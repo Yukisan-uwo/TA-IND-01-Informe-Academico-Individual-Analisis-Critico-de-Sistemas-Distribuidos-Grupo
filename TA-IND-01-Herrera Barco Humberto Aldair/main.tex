@@ -1,0 +1,128 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{referencias.bib}
+
+\graphicspath{{figuras/}{capturas/}}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,frame=single,columns=fullflexible}
+
+% ---------- DATOS DE LA CARÁTULA (completar) ----------
+\newcommand{\universidad}{Universidad Técnica Estatal de Quevedo}
+\newcommand{\facultad}{[FACULTAD]}
+\newcommand{\carrera}{[CARRERA]}
+\newcommand{\asignatura}{[ASIGNATURA]}
+\newcommand{\codigo}{TA-IND-01}
+\newcommand{\estudiante}{Herrera Barco Humberto Aldair}
+\newcommand{\paralelo}{[PARALELO]}
+\newcommand{\fecha}{13 de noviembre de 2026}
+\newcommand{\repositorio}{[URL DEL REPOSITORIO]}
+
+\begin{document}
+
+% ---------- CARÁTULA ----------
+\begin{titlepage}
+\centering
+{\large \universidad\par}
+\vspace{0.5cm}
+{\large \facultad\par}
+{\large \carrera\par}
+\vspace{1.5cm}
+{\Large\bfseries Informe Académico Individual:\\
+Análisis crítico comparativo de Elasticsearch y Apache Solr\par}
+\vspace{1.5cm}
+\begin{tabular}{rl}
+\textbf{Asignatura:} & \asignatura\\
+\textbf{Código de la actividad:} & \codigo\\
+\textbf{Estudiante:} & \estudiante\\
+\textbf{Paralelo:} & \paralelo\\
+\textbf{Fecha:} & \fecha\\
+\textbf{Repositorio:} & \url{\repositorio}\\
+\end{tabular}
+\end{titlepage}
+
+% ---------- RESUMEN (150 a 200 palabras) ----------
+\begin{abstract}
+% Sistema analizado, enfoque y conclusiones principales.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+% Qué problema resuelve, quién lo usa, a qué escala opera y por qué lo elegiste.
+
+\section{Arquitectura del sistema}
+% Componentes y cómo se comunican.
+% Figura: diagrama propio (draw.io o TikZ) y su evolución desde el esquema a mano (Anexo A).
+% \begin{figure}[H]\centering\includegraphics[width=\textwidth]{arquitectura.png}\caption{...}\label{fig:arq}\end{figure}
+
+\section{Análisis con los conceptos de la Unidad 1}
+\subsection{Transparencias de distribución}
+% Acceso, ubicación, migración, reubicación, replicación, concurrencia y fallos:
+% cuáles ofrece y cuáles no, y por qué.
+
+\subsection{CAP y PACELC}
+% Qué prioriza ante una partición y qué prioriza sin ella (latencia vs. consistencia), con evidencia.
+
+\subsection{Modelos de comunicación}
+% Cliente-servidor, P2P o híbrido; sincrónica o asincrónica; sockets, RPC o mensajería.
+
+\subsection{Tolerancia a fallos}
+% Qué fallos soporta, cómo los detecta y cómo se recupera. Al menos un incidente real documentado.
+
+\section{Experimentación propia}
+% Entorno, comandos usados, salida obtenida e interpretación.
+% Capturas con usuario, fecha y hora visibles. Comandos y resultados completos en experimento/.
+
+\section{Ejemplos del entorno del estudiante}
+% Al menos dos sistemas reales que usas: lo observado como usuario y el concepto de la unidad.
+
+\section{Análisis comparativo}
+% Tabla con mínimo cinco criterios de la Unidad 1 y su discusión.
+\begin{table}[H]
+\centering
+\caption{Comparación entre Elasticsearch y Apache Solr}
+\label{tab:comparacion}
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{Criterio} & \textbf{Elasticsearch} & \textbf{Apache Solr}\\
+\midrule
+ &  & \\
+ &  & \\
+ &  & \\
+ &  & \\
+ &  & \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Postura crítica}
+% Fortalezas, limitaciones, trade-offs y contextos donde no sería la mejor opción. Todo argumentado.
+
+\section{Conclusiones}
+% Afirmaciones concretas derivadas del análisis y del experimento.
+
+\section*{Declaración de uso de inteligencia artificial}
+% Herramienta, versión, para qué se usó y cómo se verificó lo obtenido (o declaración de que no se usó).
+
+\newpage
+\printbibliography[title={Referencias}]
+
+\appendix
+\section{Esquema inicial a mano}
+% \includegraphics[width=0.9\textwidth]{esquema_mano.jpg}
+
+\section{Capturas de lectura de las fuentes}
+% Capturas con fragmentos subrayados e indicación de página.
+
+\end{document}
