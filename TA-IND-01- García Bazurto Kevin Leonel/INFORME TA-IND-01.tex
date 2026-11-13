@@ -4,7 +4,8 @@
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx,float,booktabs,tabularx,csquotes,hyperref}
 \usepackage[backend=biber,style=ieee]{biblatex}
-\IfFileExists{referencias.bib}{\addbibresource{referencias.bib}}{}
+\addbibresource{referencias.bib}
+\DefineBibliographyStrings{spanish}{artno={artículo}}
 \newcommand{\evidencia}[3]{\begin{figure}[H]\centering\IfFileExists{#1}{\includegraphics[width=\linewidth,height=.65\textheight,keepaspectratio]{#1}}{\fbox{Imagen pendiente de carga}}\caption{#2}\label{#3}\end{figure}}
 \begin{document}
 \begin{titlepage}\centering
@@ -23,17 +24,53 @@ Paralelo A\par
 \href{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}{Repositorio en GitHub}
 \end{titlepage}
 \begin{abstract}
-% Redactar al final: 150–200 palabras.
+Este informe analiza cómo Apache Cassandra distribuye los datos y mantiene disponible una consulta cuando dejan de responder algunos nodos. El análisis describe el papel del coordinador, la replicación por centro de datos y los niveles de consistencia. Se realizó una prueba con Cassandra 5.0.9 en Docker, tres nodos y un factor de replicación de tres. Después de insertar un registro con ALL, se repitió la misma consulta con ONE y QUORUM mientras se detenían dos nodos de forma sucesiva. Con los tres nodos activos, ambos niveles devolvieron el registro. Con una única réplica disponible, ONE completó la lectura y QUORUM devolvió un error de disponibilidad porque requería dos respuestas. La comparación documental con CockroachDB examina la distribución de datos, la coordinación de lecturas, la replicación, los fallos y la recuperación. El resultado del laboratorio muestra que la disponibilidad depende del nivel de consistencia seleccionado y del estado de las réplicas de cada dato. La prueba se limita a lecturas de un registro previamente escrito y permite identificar qué condiciones habría que estudiar para evaluar escrituras, latencia o particiones de red.
 \end{abstract}
 \section{Introducción}
-% Problema, usuarios, escala y justificación con fuentes.
+Cassandra aborda el almacenamiento de grandes volúmenes de datos en varias máquinas. Divide el conjunto de datos para repartir la carga y conserva varias copias para que un nodo fuera de servicio no implique necesariamente la pérdida de acceso. Discord utilizó Cassandra para su historial de mensajes. Su equipo de ingeniería informó que a comienzos de 2022 su clúster tenía 177 nodos y almacenaba billones de mensajes \cite{discord2023}. Ese caso muestra tanto la escala alcanzada como las dificultades operativas de sostenerla.
+
+Elegí Cassandra porque permite variar el nivel de consistencia de una operación sin cambiar el registro ni la consulta. Esta propiedad hace posible observar en un laboratorio pequeño una decisión que también importa en producción. Los estudios de Ferreira et al. y Redžepagić et al. examinan cómo la configuración de consistencia y replicación afecta el rendimiento en otros entornos \cite{ferreira2024,redzepagic2026}. Sus mediciones aportan contexto para interpretar una práctica centrada en disponibilidad.
+
 \section{Arquitectura del sistema}
-% Componentes, comunicación, diagrama propio y evolución desde el Anexo A.
+La clave de partición se transforma en un token que permite localizar los nodos responsables del dato. En la tabla del laboratorio, \texttt{id} cumple esa función. La estrategia \texttt{NetworkTopologyStrategy} establece el número de réplicas por centro de datos. En \texttt{dc1}, el factor de tres coloca la partición del registro de prueba en los tres nodos disponibles \cite{cassandraDynamo}.
+
+El cliente \texttt{cqlsh} envía la consulta CQL a \texttt{taind-cas1}. Este nodo actúa como coordinador de la petición, localiza las réplicas y reúne las respuestas que exige el nivel seleccionado. También posee una réplica del registro. El papel de coordinador depende del nodo que recibe la petición. Los nodos intercambian información de pertenencia y actividad mediante \textit{gossip} \cite{cassandraDynamo}.
+
+\evidencia{Evidencias/cassandra-docker.png}{Arquitectura del clúster Cassandra utilizado en el experimento de lectura.}{fig:arquitectura-cassandra}
+
 \section{Análisis con los conceptos de la Unidad 1}
 \subsection{Transparencias de distribución}
+\begin{table}[htbp]
+\small\centering
+\caption{Transparencias en el acceso a los datos de Cassandra.}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Transparencia & Aplicación al sistema \\
+\midrule
+Acceso & CQL ofrece una interfaz común para consultar datos desde un nodo del clúster. \\
+Ubicación & El cliente identifica la fila por su clave. El coordinador resuelve qué nodos guardan la partición. \\
+Migración & El movimiento de rangos entre nodos conserva la clave y la consulta del cliente. El operador sí participa en los cambios de topología. \\
+Reubicación & Es parcial. El clúster puede cambiar la asignación de rangos mientras presta servicio. Una sesión conectada a un nodo que se apaga puede requerir reconexión. \\
+Replicación & La consulta recupera una sola fila lógica. El factor de replicación y el nivel de consistencia son decisiones visibles de configuración. \\
+Concurrencia & El motor resuelve conflictos de escrituras ordinarias mediante marcas de tiempo. Una condición que debe evaluarse atómicamente requiere una operación condicional. \\
+Fallos & Es parcial. La caída de una réplica puede pasar inadvertida en una lectura que todavía alcanza su umbral. Si faltan respuestas, el cliente recibe un error. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+El laboratorio muestra la transparencia parcial de fallos. La consulta conservó su sintaxis cuando se apagaron los contenedores. El fallo solo se hizo visible para \texttt{QUORUM} al quedar una réplica activa. La distribución y resolución de versiones siguen las reglas del modelo descrito por Cassandra \cite{cassandraDynamo}.
+
 \subsection{CAP y PACELC}
+Ante una partición de red, CAP plantea un compromiso entre garantizar la visión más reciente de los datos y continuar atendiendo peticiones en cada lado de la separación. En Cassandra el resultado depende de la operación, su nivel de consistencia y las réplicas alcanzables. Con factor de tres, un coordinador que alcanza una sola réplica puede servir una lectura \texttt{ONE}, con el riesgo de que esa copia esté atrasada. Una lectura \texttt{QUORUM} requiere dos respuestas. Usar cuórum tanto en la escritura como en la lectura garantiza que ambos conjuntos compartan al menos una réplica, un mecanismo que mejora la visibilidad de escrituras confirmadas \cite{cassandraDynamo,ferreira2024}.
+
+PACELC extiende la discusión a la operación sin particiones. Esperar una respuesta permite completar la lectura con menos coordinación. Esperar una mayoría puede añadir demora si alguna réplica responde lentamente o está lejos. La magnitud de esa diferencia depende de la carga y la configuración \cite{ferreira2024,redzepagic2026}. Mi prueba detuvo contenedores y observó si la lectura se completaba. Una prueba de partición tendría que aislar enlaces mientras los nodos siguen ejecutándose. Para estudiar la latencia harían falta consultas repetidas y mediciones comparables.
+
 \subsection{Modelos de comunicación}
+Entre \texttt{cqlsh} y Cassandra hay una relación cliente-servidor. El laboratorio usó el protocolo nativo de Cassandra v5 sobre TCP en el puerto 9042. Para el usuario de la terminal la consulta sigue un patrón de solicitud y respuesta. Entre nodos hay comunicación entre pares. El coordinador intercambia mensajes con las réplicas y el \textit{gossip} circula periódicamente en segundo plano. Por eso el descubrimiento de cambios de estado y la espera de respuestas para una consulta son procesos distintos \cite{cassandraDynamo}.
+
 \subsection{Tolerancia a fallos}
+Cada nodo estima la disponibilidad de sus pares a partir de la información de actividad que recibe. Si una réplica deja de responder, la petición puede seguir cuando hay suficientes copias alcanzables. En escrituras, el coordinador puede conservar una indicación temporal de la mutación pendiente para reenviarla cuando la réplica regrese. La reparación de lectura ayuda a reconciliar versiones según la configuración de la tabla y la reparación antientropía compara rangos entre réplicas para corregir diferencias \cite{cassandraDynamo}. Mi experimento examinó la continuidad de lectura de un registro ya replicado.
+
+Discord documentó que los picos de solicitudes sobre determinadas particiones de mensajes saturaban algunos nodos y elevaban la latencia de otras peticiones. La réplica adicional protege frente a la pérdida de una copia, pero las particiones calientes también exigen controlar la carga. El equipo introdujo un servicio que agrupaba solicitudes idénticas y migró el almacenamiento de mensajes a ScyllaDB \cite{discord2023}. El caso amplía la discusión del laboratorio porque aborda degradación bajo carga, además de la pérdida de un nodo.
 \section{Experimentación propia}
 \subsection{Objetivo y configuración}
 La prueba evaluó si Cassandra podía devolver el mismo registro con \texttt{ONE} y \texttt{QUORUM} al reducir el número de réplicas activas. El entorno usó Cassandra 5.0.9 en Docker, tres nodos en \texttt{dc1} y un factor de replicación de tres.
@@ -41,39 +78,65 @@ La prueba evaluó si Cassandra podía devolver el mismo registro con \texttt{ONE
 \subsection{Procedimiento y resultados}
 El registro con \texttt{id = 1} se insertó con \texttt{ALL}, que exigía la confirmación de las tres réplicas. Se mantuvo activo \texttt{taind-cas1} como coordinador de la consulta. Los comandos y las salidas se documentan en \path{Experimento/prueba-cassandra.md}.
 
-
-
-
 Con tres réplicas activas, ambas lecturas devolvieron el registro.
 \evidencia{Evidencias/02-lecturas-tres-replicas.png}{Lecturas con tres réplicas activas.}{fig:tres}
 
-
-
-
-Después de detener \texttt{taind-cas3}, se repitieron ambas lecturas con dos réplicas activas (Figura~\ref{fig:dos}).
+Después de detener \texttt{taind-cas3}, repetí las lecturas con dos réplicas activas. La Figura~\ref{fig:dos} registra ese escenario.
 \evidencia{Evidencias/03-lecturas-dos-replicas.png}{Lecturas tras detener el tercer nodo.}{fig:dos}
 
+Al detener también \texttt{taind-cas2}, \texttt{ONE} devolvió el registro y \texttt{QUORUM} produjo un error \texttt{Unavailable}. La salida indicó dos réplicas requeridas y una disponible.
+\evidencia{Evidencias/04-lecturas-una-replica.png}{Resultado con una réplica activa.}{fig:una}
 
-
-
-Al detener también \texttt{taind-cas2}, \texttt{ONE} devolvió el registro y \texttt{QUORUM} produjo un error \texttt{Unavailable}. Cassandra indicó dos réplicas requeridas y una disponible.
-\evidencia{Evidencias/04-lecturas-una-replica.png}{Lecturas con una réplica activa.}{fig:una}
 \subsection{Interpretación}
-En este escenario, \texttt{ONE} pudo completar la lectura con la réplica disponible. \texttt{QUORUM} requería dos respuestas de las tres réplicas configuradas. El resultado muestra cómo el nivel de consistencia afectó la disponibilidad de la lectura durante la detención controlada de nodos.
+Con el coordinador activo y el registro escrito previamente en las tres réplicas, la lectura pudo continuar con \texttt{ONE}. La misma operación dejó de estar disponible con \texttt{QUORUM} al faltar una respuesta para alcanzar la mayoría. El error coincide con el umbral que documenta Cassandra \cite{cassandraDynamo}. La prueba permite comparar la disponibilidad de la lectura ante la pérdida de nodos en esta configuración.
+
 \section{Ejemplos del entorno del estudiante}
-% Dos observaciones propias y su relación con los conceptos de la unidad.
+% Añadir aquí las dos experiencias verificadas por Kevin, con observación y concepto.
+
 \section{Análisis comparativo}
-% Confirmar el comparador y discutir al menos cinco criterios con fuentes.
+Cassandra y CockroachDB distribuyen datos y conservan copias para responder ante fallos. La comparación se centra en la lectura de datos replicados. Cassandra se evaluó en Docker y CockroachDB se analiza a partir de su documentación \cite{cassandraDynamo,cockroachRaft,cockroachReads}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Comparación de mecanismos de Cassandra y CockroachDB.}
+\begin{tabularx}{\linewidth}{@{}p{.20\linewidth}XX@{}}
+\toprule
+Criterio & Cassandra & CockroachDB \\
+\midrule
+Distribución & La clave de partición determina el token y la ubicación de las réplicas. & El espacio de claves se divide en rangos replicados. \\
+Replicación & Las operaciones ordinarias usan un nivel de consistencia seleccionado para cada operación. & Cada rango mantiene un registro replicado mediante Raft. \\
+Coordinación de lectura & El nodo que recibe la consulta coordina las respuestas de las réplicas. & La lectura actual pasa normalmente por el titular del arrendamiento del rango. \\
+Disponibilidad ante fallos & Con una réplica alcanzable, \texttt{ONE} puede completar la lectura. \texttt{QUORUM} requiere una mayoría. & El progreso de las escrituras de un rango requiere una mayoría de sus réplicas votantes. Si se pierde el titular, el rango necesita una elección o transferencia válida para recuperar el servicio de lecturas actuales. \\
+Recuperación & Las indicaciones pendientes, la reparación de lectura y la reparación antientropía ayudan a reconciliar réplicas. & Las réplicas pueden ponerse al día mediante entradas del registro de Raft o mediante una instantánea. \\
+Latencia de lectura & El nivel elegido determina cuántas respuestas debe esperar el coordinador. & Una réplica cercana puede servir lecturas históricas autorizadas por una marca de tiempo cerrada. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+El cuórum de lectura de Cassandra es un umbral para una solicitud concreta. En CockroachDB la mayoría de Raft se utiliza para acordar las actualizaciones de un rango. Una lectura histórica en CockroachDB tiene una antigüedad explícita y un límite de seguridad definido por el rango. La lectura \texttt{ONE} de Cassandra depende de la versión que posea la réplica consultada. Por eso conviene distinguir cuántas respuestas se requieren de qué versión se promete al cliente \cite{cassandraDynamo,cockroachRaft,cockroachReads}.
+
 \section{Postura crítica}
+La consistencia ajustable es una fortaleza cuando la aplicación puede decidir qué operaciones toleran leer una copia atrasada. Para un historial de eventos consultado por clave, una lectura disponible durante la pérdida de dos réplicas puede ser más valiosa que exigir la mayoría en todas las consultas. La prueba mostró esa ventaja para un registro que ya existía en las tres réplicas. Si el dato hubiera cambiado durante el fallo, haría falta otra prueba para determinar qué versión observaría el lector.
+
+El diseño obliga a conocer los patrones de acceso. Una aplicación que concentra peticiones sobre pocas claves puede saturar las réplicas responsables, como documentó Discord \cite{discord2023}. En bases NoSQL distribuidas entre regiones, los niveles de consistencia pueden afectar el tiempo de respuesta y el rendimiento de las operaciones \cite{ferreira2024,ferreira_benchmarking_2025}. Para un sistema que deba comprobar en una misma transacción invariantes que abarcan múltiples registros, como evitar un cargo duplicado mientras se actualizan varios saldos, evaluaría primero una base SQL distribuida con garantías transaccionales adecuadas.
+
 \section{Conclusiones}
+Con tres réplicas activas, \texttt{ONE} y \texttt{QUORUM} devolvieron el mismo registro. Con una réplica activa, \texttt{ONE} conservó la disponibilidad de lectura. \texttt{QUORUM} devolvió un error que identificó el umbral requerido y las réplicas alcanzables. Por tanto, la cantidad de nodos que esta lectura puede perder depende del nivel elegido.
+
+La comparación con CockroachDB muestra que contar réplicas es insuficiente para describir la garantía de un sistema. También importa si la mayoría se usa para responder una lectura, para replicar un cambio acordado o para sostener la coordinación tras un fallo. Para extender el experimento sería necesario introducir escrituras durante la caída y observar las versiones leídas y la convergencia después de la recuperación.
+
 \section{Declaración de uso de inteligencia artificial}
-% Identificar herramienta, versión verificable, usos y comprobaciones.
-\IfFileExists{referencias.bib}{\printbibliography[title={Referencias}]}{}
+Se utilizó ChatGPT en modo Codex como apoyo para estructurar el informe, explicar comandos, localizar fuentes y preparar un borrador en LaTeX. El experimento en Docker y las capturas de ejecución fueron realizados por el estudiante. Los resultados del borrador se contrastaron con las salidas de terminal compartidas. La revisión del estudiante incluye cotejar las citas con las publicaciones originales y comprobar el PDF. El identificador exacto de versión del modelo debe consignarse si está disponible.
+
+\printbibliography[title={Referencias}]
 \clearpage
 \section*{Anexos}
 \appendix
 \section{Esquema inicial a mano}
 \evidencia{esquema-inicial.jpeg}{Bosquejo inicial del clúster Cassandra.}{fig:esquema}
-\section{Evidencias de lectura de las fuentes}
-% Tres capturas anotadas con su página y cita correspondiente.
+\section{Evidencias de lectura de las fuentes}\evidencia{Evidencias/anexo-b-ferreira-p02.jpeg}{Ferreira et al., página 2. Efecto de la distancia entre réplicas en el tiempo de respuesta, citado en CAP y PACELC \cite{ferreira2024}.}{fig:anexo-ferreira-2024}
+
+\evidencia{Evidencias/anexo-b-redzepagic-p09.jpeg}{Redžepagić et al., página 9. Configuración de \texttt{ONE} y \texttt{QUORUM} en las pruebas de Cassandra, citada en la introducción y el análisis de consistencia \cite{redzepagic2026}.}{fig:anexo-redzepagic}
+
+\evidencia{Evidencias/anexo-b-ferreira-2025-p01.jpeg}{Ferreira et al., página 63428 (primera del PDF). Compromisos entre consistencia y rendimiento en despliegues multirregión, citados en la postura crítica \cite{ferreira_benchmarking_2025}.}{fig:anexo-ferreira-2025}
 \end{document}
