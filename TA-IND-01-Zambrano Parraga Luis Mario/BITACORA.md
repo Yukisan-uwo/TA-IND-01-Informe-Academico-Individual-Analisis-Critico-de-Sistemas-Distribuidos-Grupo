@@ -52,3 +52,24 @@ Abrí Docker Desktop y volví a ejecutar `docker compose up -d`. Los tres conten
 ### Tiempo dedicado
 Aproximadamente 2 horas y 30 minutos.
 
+### Continuación de otro commit: pruebas de mensajería
+
+**Actividades realizadas:**
+- Publiqué tres mensajes desde el panel de administración de RabbitMQ.
+- Comprobé que los mensajes permanecían pendientes sin consumidores conectados.
+- Recuperé los mensajes utilizando la opción de confirmación automática.
+- Preparé un productor Python con la biblioteca Pika y confirmaciones de publicación.
+- Envié cinco mensajes desde Python y comprobé que quedaron pendientes en la cola.
+- Preparé un consumidor Python con confirmaciones manuales.
+- Recuperé los cinco mensajes y comprobé que la cola quedó vacía.
+- Guardé capturas y registros de los resultados.
+
+**Resultados:**
+- Se publicaron y recuperaron tres mensajes desde RabbitMQ Management.
+- El productor Python obtuvo confirmaciones de cinco publicaciones.
+- El consumidor Python procesó cinco mensajes y envió sus confirmaciones manuales.
+- La consulta final mostró cero mensajes pendientes y cero sin confirmar.
+
+**Dificultades:** no tuve dificultades esta vez.
+
+**Tiempo adicional dedicado:** 1 hora.
