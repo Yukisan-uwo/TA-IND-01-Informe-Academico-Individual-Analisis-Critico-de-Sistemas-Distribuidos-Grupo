@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="ondaplay" name="OndaPlay · protocolos y mensajes">
+    <mxGraphModel dx="1741" dy="887" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="5000" pageHeight="4042" background="light-dark(#000000,#000000)" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-3" parent="0" />
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-6" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;verticalAlign=top;spacingTop=10;fontStyle=1;strokeWidth=2;fontSize=19;" value="Docker Desktop" vertex="1">
+          <mxGeometry height="493" width="836" x="32" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-7" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;verticalAlign=top;spacingTop=10;fontStyle=1;dashed=1;dashPattern=7 4;textShadow=1;" value="Red interna de Docker · taind-cassandra" vertex="1">
+          <mxGeometry height="420" width="790" x="55" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-8" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;verticalAlign=top;spacingTop=10;fontStyle=1;textShadow=1;" value="Contenedor taind-cas1" vertex="1">
+          <mxGeometry height="190" width="310" x="295" y="244" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-9" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;verticalAlign=top;spacingTop=10;fontStyle=1;textShadow=1;" value="Contenedor taind-cas2" vertex="1">
+          <mxGeometry height="87" width="310" x="85" y="507" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-10" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;verticalAlign=top;spacingTop=10;fontStyle=1;textShadow=1;" value="Contenedor taind-cas3" vertex="1">
+          <mxGeometry height="87" width="310" x="505" y="507" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-11" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;fontStyle=1;textShadow=1;" value="PowerShell en Windows" vertex="1">
+          <mxGeometry height="44" width="250" x="325" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-12" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;textShadow=1;" value="Cliente cqlsh" vertex="1">
+          <mxGeometry height="35" width="180" x="360" y="281" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-13" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;textShadow=1;" value="Cassandra · Nodo 1&#xa;Coordina la consulta y guarda una réplica" vertex="1">
+          <mxGeometry height="51" width="260" x="320" y="366" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-14" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;fontSize=14;textShadow=1;" value="Cassandra · Nodo 2 · Guarda una réplica" vertex="1">
+          <mxGeometry height="38" width="270" x="105" y="541" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-15" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;fontSize=14;textShadow=1;" value="Cassandra · Nodo 3 · Guarda una réplica" vertex="1">
+          <mxGeometry height="38" width="270" x="525" y="541" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-16" edge="1" parent="lA1PTm-7rC3lnaQCD-3A-3" source="lA1PTm-7rC3lnaQCD-3A-11" style="html=0;strokeColor=#000000;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;textShadow=1;" target="lA1PTm-7rC3lnaQCD-3A-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-17" edge="1" parent="lA1PTm-7rC3lnaQCD-3A-3" source="lA1PTm-7rC3lnaQCD-3A-12" style="html=0;strokeColor=#000000;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;textShadow=1;" target="lA1PTm-7rC3lnaQCD-3A-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-18" edge="1" parent="lA1PTm-7rC3lnaQCD-3A-3" source="lA1PTm-7rC3lnaQCD-3A-13" style="html=0;strokeColor=#000000;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=0;exitY=0.5;entryX=0.5;entryY=0;edgeStyle=orthogonalEdgeStyle;textShadow=1;" target="lA1PTm-7rC3lnaQCD-3A-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-19" edge="1" parent="lA1PTm-7rC3lnaQCD-3A-3" source="lA1PTm-7rC3lnaQCD-3A-13" style="html=0;strokeColor=#000000;endArrow=block;endFill=1;startArrow=block;startFill=1;exitX=1;exitY=0.5;entryX=0.5;entryY=0;edgeStyle=orthogonalEdgeStyle;textShadow=1;" target="lA1PTm-7rC3lnaQCD-3A-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-20" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;strokeColor=none;fontSize=13;align=left;textShadow=1;" value="docker exec -it taind-cas1 cqlsh" vertex="1">
+          <mxGeometry height="24" width="250" x="468" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-21" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;strokeColor=none;fontSize=13;align=left;textShadow=1;" value="Consulta CQL · localhost:9042" vertex="1">
+          <mxGeometry height="24" width="210" x="469" y="329" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-22" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;strokeColor=none;fontSize=13;textShadow=1;" value="Comunicación entre nodos" vertex="1">
+          <mxGeometry height="24" width="158" x="68" y="458" as="geometry" />
+        </mxCell>
+        <mxCell id="lA1PTm-7rC3lnaQCD-3A-23" parent="lA1PTm-7rC3lnaQCD-3A-3" style="html=0;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#000000;fontColor=#000000;fontSize=15;strokeColor=none;fontSize=13;textShadow=1;" value="Comunicación entre nodos" vertex="1">
+          <mxGeometry height="24" width="158" x="675" y="458" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
