@@ -56,8 +56,9 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 - [x] Ejecutar una prueba propia y conservar cuatro capturas originales de la laptop y la [transcripción de PowerShell](resultados/sesion-20261112-233908.txt).
 - [x] Incorporar dos ejemplos de uso y relacionarlos con conceptos de la unidad. El aviso de reconexión de Discord ilustra la transparencia a fallos y la demo de Zulip ilustra la transparencia de acceso.
 - [ ] Incluir la foto original del bosquejo cuando Byron indique que se puede incorporar, y agregar el diagrama final que él elabore a partir del dibujo.
-- [ ] Abrir cada DOI y comprobar sus datos. Revisar al menos seis fuentes recientes y tres artículos de revistas indexadas. Agregar al Anexo B tres capturas de lectura propias, anotadas, con página y cita.
-- [ ] Completar la bitácora con tiempos reales y registrar ocho commits de trabajo con mensajes propios en al menos tres días. Los dos mensajes redactados por Codex están declarados en la bitácora.
+- [x] Incorporar al Anexo B las tres capturas de los fragmentos resaltados por Byron, con página y cita.
+- [ ] Abrir cada DOI y comprobar sus datos. Revisar al menos seis fuentes recientes y tres artículos de revistas indexadas.
+- [ ] Completar la bitácora con tiempos reales y registrar ocho commits de trabajo con mensajes propios en al menos tres días. Los mensajes redactados por Codex están declarados en la bitácora.
 - [ ] Completar la declaración de uso de IA y anotar qué verificó Byron.
 - [ ] Grabar de tres a cinco minutos con rostro y voz. Explicar sin leer una captura y la conclusión. Poner el enlace del video en el README y comprobar el acceso.
 - [ ] Preparar la defensa oral del método, resultado, límites y cambios posibles.

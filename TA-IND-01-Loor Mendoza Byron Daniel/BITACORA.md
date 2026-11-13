@@ -45,6 +45,6 @@
 - Se ordenaron las fuentes del informe, el procedimiento y las capturas. Se verificó que los archivos originales de las capturas conservaran el mismo contenido al moverlos. Se incorporó el ejemplo de Byron sobre el aviso «Reconectando».
 - Byron cerró la transcripción de PowerShell. Se comprobó que conserva el registro del mensaje de control, las anotaciones del corte y la observación posterior a la reconexión.
 - Byron envió ZULIP-M1 en el tema Prueba TA-IND-01 del canal general de la demo. Codex preparó el borrador del mensaje, comprobó que el mensaje siguiera visible al volver al tema y guardó la captura para el informe.
-- Codex ubicó los fragmentos de tres artículos citados para el Anexo B. Byron hará las anotaciones y las capturas de lectura.
-- Codex redactó los mensajes de los dos commits de esta actualización, sobre la prueba de Discord y el borrador comparativo. Los mensajes de autoría del estudiante se registran en sus propios commits.
+- Codex ubicó los fragmentos de tres artículos citados para el Anexo B. Tras intentar marcarlos en Brave, Byron guardó el resaltado en los PDF de Ferreira (p. 14), Bação y Guerreiro (p. 4) y Kokociński (p. 11). Codex tomó en Edge las capturas con las marcas y el número de página visibles.
+- Codex redactó los mensajes de los commits de la prueba de Discord, el borrador comparativo y la incorporación de las lecturas. Los mensajes de autoría del estudiante se registran en sus propios commits.
 - Tiempo de trabajo personal: pendiente de registrar por Byron.
