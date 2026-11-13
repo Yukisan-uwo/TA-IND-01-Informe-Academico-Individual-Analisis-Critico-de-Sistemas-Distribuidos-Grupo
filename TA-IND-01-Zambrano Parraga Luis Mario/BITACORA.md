@@ -115,19 +115,23 @@ Se conservaron las capturas y los registros de las pruebas de tolerancia a fallo
 
 2 horas y 40 minutos aproximadamente
 
-##Continuación de la sesión — revisión de fuentes y estructura del informe (13 de noviembre de 2026)
+## Continuación de la sesión — revisión de fuentes y estructura del informe (13 de noviembre de 2026)
 
-###Actividades realizadas:
+### Actividades realizadas:
 - Revisé artículos científicos sobre arquitectura y mensajería de RabbitMQ, CAP, PACELC, Raft, transparencias y comparación con Kafka.
 - Localicé y resalté fragmentos en las publicaciones originales; añadí anotaciones relacionándolos con los apartados del informe.
 - Preparé nueve capturas de lectura y corregí las que necesitaban un mejor resaltado o mostrar la página.
 - Revisé una plantilla LaTeX compartida como referencia de formato y adapté su estructura a mi tema de RabbitMQ, sin reutilizar el contenido ajeno.
 - Organicé main.tex y referencias.bib en la carpeta informe/ y comprobé las citas y los comandos de compilación con apoyo de ChatGPT.
 
-###Dificultades encontradas: Algunos artículos están en inglés y costó localizar los fragmentos relevantes. También fue necesario revisar las rutas de las figuras y de la bibliografía según la estructura de carpetas del repositorio.
+### Dificultades encontradas: 
+Algunos artículos están en inglés y costó localizar los fragmentos relevantes. También fue necesario revisar las rutas de las figuras y de la bibliografía según la estructura de carpetas del repositorio.
 
-###Cómo las resolví: Consulté las traducciones como apoyo, contrasté los fragmentos con los PDF originales y corregí las rutas de LaTeX para que main.tex y referencias.bib estén juntos. Dejé identificados los apartados que aún no están completos.
+### Cómo las resolví: 
+Consulté las traducciones como apoyo, contrasté los fragmentos con los PDF originales y corregí las rutas de LaTeX para que main.tex y referencias.bib estén juntos. Dejé identificados los apartados que aún no están completos.
 
-###Resultado de la sesión: Nueve capturas de lectura preparadas, siete fuentes utilizadas en el borrador del informe y estructura LaTeX compilable. Todavía faltan datos de portada, diagrama definitivo, ejemplos personales, incidente documentado y revisión final del PDF con todas las evidencias.
+### Resultado de la sesión: 
+Nueve capturas de lectura preparadas, siete fuentes utilizadas en el borrador del informe y estructura LaTeX compilable. Todavía faltan datos de portada, diagrama definitivo, ejemplos personales, incidente documentado y revisión final del PDF con todas las evidencias.
 
-###Tiempo dedicado: 4 horas aproximadamente.
+### Tiempo dedicado:
+4 horas aproximadamente.
