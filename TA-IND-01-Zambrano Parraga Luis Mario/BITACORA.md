@@ -14,3 +14,41 @@ Entonces comparé los sistemas y escogí el que me interesara más, a la final e
 
 **Tiempo dedicado:**
 2 horas
+
+
+## 12 de noviembre de 2026
+
+### Actividades realizadas
+- Preparé el entorno experimental de RabbitMQ utilizando Docker Desktop.
+- Configuré tres contenedores con RabbitMQ 4.2.9 mediante Docker Compose.
+- Comprobé el funcionamiento de los contenedores y la respuesta del primer nodo.
+- Uní los nodos `rabbit2` y `rabbit3` al clúster principal.
+- Verifiqué el estado del clúster mediante el comando `rabbitmqctl cluster_status`.
+- Revisé los tres nodos desde el panel de administración de RabbitMQ.
+- Creé la cola de quórum `taind01_mensajes` y realicé consultas para comprobar sus miembros.
+- Guardé capturas de las pruebas y los registros obtenidos desde la terminal.
+- Elaboré a mano el primer bosquejo de la arquitectura experimental, identificando los nodos de RabbitMQ y sus componentes principales.
+
+### Problemas encontrados
+Al intentar iniciar los contenedores, Docker no podía conectarse al motor de contenedores Linux porque Docker Desktop todavía no estaba abierto.
+
+### Solución aplicada
+Abrí Docker Desktop y volví a ejecutar `docker compose up -d`. Los tres contenedores iniciaron correctamente y pude continuar con la configuración del clúster.
+
+### Resultados obtenidos
+- Se inició un entorno de tres contenedores RabbitMQ.
+- Los tres nodos quedaron registrados como activos dentro del mismo clúster.
+- La consulta `cluster_status` no mostró alarmas ni particiones de red.
+- Se crearon registros y capturas para respaldar las pruebas realizadas.
+- Se obtuvo el bosquejo de arquitectura que servirá como base para elaborar el diagrama definitivo.
+
+### Evidencias generadas
+- `experimento/docker-compose.yml`
+- `experimento/capturas/01-contenedores-iniciales.png` hasta `06-miembros-quorum.png`
+- `experimento/resultados/02-estado-cluster.txt`
+- `experimento/resultados/03-estado-cola-quorum.txt`
+- `diagramas/boceto-inicial.jpeg`
+
+### Tiempo dedicado
+Aproximadamente 2 horas y 30 minutos.
+
