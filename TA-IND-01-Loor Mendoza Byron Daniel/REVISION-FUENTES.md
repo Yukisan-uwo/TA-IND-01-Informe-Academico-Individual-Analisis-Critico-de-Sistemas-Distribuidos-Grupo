@@ -19,15 +19,17 @@ Los identificadores 110, 158 y 104707 son números de artículo y se guardan com
 
 - `ingram2023messages`: publicación de Discord Engineering firmada por Bo Ingram el 6 de marzo de 2023. Respalda la evolución del almacenamiento y las decisiones descritas en esa fecha. No demuestra por sí sola la arquitectura actual completa.
 - `discordGateway`: documentación oficial para explicar eventos, conexión WebSocket y recuperación de sesiones de aplicaciones. No permite asumir que observar el cliente web revela todos esos mecanismos internos.
-- `matrixSpecification`: base para comparar comunicación federada y organización de servidores. La comparación debe aplicar los mismos criterios a ambos sistemas.
+- `smith2023authOutage`: informe de Discord sobre la caída de autenticación del 6 de noviembre de 2023. La pérdida temporal de una zona durante mantenimiento y un disco degradado en otra redujeron la capacidad del clúster. Los reintentos aumentaron la carga y la interrupción impidió leer y enviar mensajes. Las lecturas por cuórum mencionadas en el informe corresponden al clúster de autenticación. [Informe del incidente](https://discord.com/blog/authentication-outage)
+- `zulipArchitecture`: describe PostgreSQL para persistencia y el uso de Tornado para entregar eventos mediante peticiones HTTP de larga duración.
+- `zulipSendingMessages`: explica el registro del mensaje y sus destinatarios en la base de datos y el envío del evento al sistema de entrega.
+- `zulipPostgresql`: documenta un despliegue con PostgreSQL en un servidor separado y la configuración de una réplica de respaldo. Cualquier análisis de recuperación debe indicar qué configuración se considera.
 
 ## Verificaciones pendientes antes de entregar
 
-- Confirmar la indexación de Computing y Journal of Parallel and Distributed Computing en una fuente oficial. Journal of Cloud Computing declara SCIE en https://link.springer.com/journal/13677/aims-and-scope.
+- Confirmar la indexación de Journal of Parallel and Distributed Computing en una fuente oficial. [Computing](https://link.springer.com/journal/607) y [Journal of Cloud Computing](https://link.springer.com/journal/13677/aims-and-scope) declaran SCIE.
 - Abrir personalmente cada DOI y contrastar los datos con el artículo, además de esta revisión asistida.
 - Tomar tres capturas de lectura anotadas e indicar sus páginas reales. No hay capturas de lectura preparadas en este aporte.
-- Revisar la fecha o versión de las dos páginas de documentación viva. No se les ha atribuido un año de publicación ficticio; la fecha de consulta no equivale a publicación dentro de los últimos cinco años.
-- Incorporar un incidente real de Discord y su fuente primaria.
+- Revisar la fecha o versión de la documentación viva. La fecha de consulta es distinta de la fecha de publicación.
 - Conservar en la bibliografía final únicamente las obras citadas en el texto y compilar con biblatex en estilo IEEE.
 
-Hay seis entradas iniciales en referencias.bib, pero esto aún no certifica el cumplimiento completo de la rúbrica bibliográfica.
+Hay nueve entradas iniciales en referencias.bib. La selección final depende de las fuentes que se citen y de la comprobación de fechas e indexación.
