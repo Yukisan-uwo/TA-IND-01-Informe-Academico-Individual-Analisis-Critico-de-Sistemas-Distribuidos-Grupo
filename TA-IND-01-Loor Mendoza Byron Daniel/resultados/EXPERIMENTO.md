@@ -1,6 +1,6 @@
 # Experimento: recuperación de mensajes tras desconectar un cliente
 
-Estado: se ejecutó el piloto asistido en una PC. La prueba principal con dos dispositivos queda pendiente.
+Se completó una ronda con dos dispositivos. Chrome mostró los tres mensajes al reconectar sin recarga manual. El piloto asistido se conserva como antecedente del método.
 
 ## Objetivo
 
@@ -10,7 +10,7 @@ Observar cómo un cliente web de Discord recupera mensajes después de una inter
 
 - Un servidor privado de prueba de Byron, con un canal de texto dedicado y sin otros participantes.
 - Discord web en Chrome o Edge en la laptop y Discord en un teléfono, ambos con la cuenta de Byron.
-- El teléfono usa datos móviles y permanece conectado durante toda la prueba. La laptop usa Wi-Fi, que se desconectará durante el corte. Verificar que la laptop no tenga otra conexión activa y que el teléfono siga enviando mensajes. Usar este método en las tres rondas y mostrar el indicador de red de Windows en la captura del corte.
+- El teléfono usa datos móviles y permanece conectado durante toda la prueba. La laptop usa Wi-Fi, que se desconecta durante el corte. Verificar que la laptop no tenga otra conexión activa y que el teléfono siga enviando mensajes. Mostrar el indicador de red de Windows en la captura del corte.
 - Registrar versiones de navegador y aplicación, tipo de conexión y fecha. No mostrar contraseñas, tokens ni conversaciones ajenas en las capturas.
 
 ## Prueba piloto en una sola PC
@@ -61,15 +61,24 @@ Las marcas son manuales y tienen error de reacción humana; no representan laten
 3. Desconectar el Wi-Fi de la laptop. Verificar que el indicador de red muestre que está desconectada y registrar el momento del corte.
 4. Desde el teléfono enviar tres mensajes, `BYRON-R1-M1`, `BYRON-R1-M2` y `BYRON-R1-M3`, dejando cinco segundos entre ellos. Comprobar que el teléfono los muestra y anotar cuáles aparecen en la laptop durante el corte. Tomar la captura 3 con el indicador de desconexión y la terminal visibles. Puede añadirse una captura original del teléfono como respaldo.
 5. Reconectar el Wi-Fi de la laptop. Observar hasta 60 segundos si aparecen los tres mensajes, en qué orden y si se duplican. Registrar el tiempo aproximado hasta la recuperación. Si siguen faltando al terminar el plazo, registrar el resultado antes de probar una recarga. Tomar la captura 4.
-6. Repetir el ciclo dos veces más con los prefijos `BYRON-R2` y `BYRON-R3`. Conservar los resultados inesperados.
 
 ## Resultados que se deben guardar
 
-Por cada repetición, registrar los identificadores enviados, la hora manual de desconexión y reconexión, los mensajes visibles durante el corte, los recuperados, su orden, los duplicados, el tiempo aproximado y si hizo falta recargar. Guardar el transcript y las capturas originales en `resultados/`. Para la primera ronda, usar nombres como `01-conectado.png`, `02-mensaje-recibido.png`, `03-sin-conexion.png` y `04-reconexion.png`.
+Registrar los identificadores enviados, el estado de conexión, los mensajes visibles y recuperados, su orden y si hizo falta recargar. Guardar la transcripción en `resultados/` y las imágenes originales en `resultados/capturas/`. Las horas anotadas a mano son marcas de observación.
 
-## Interpretación prevista
+### Primera ronda (R1)
 
-Comparar el estado conectado con el desconectado y el recuperado. Si los mensajes reaparecen, describir esa observación y sus condiciones; si faltan, registrar el límite observado y cualquier recuperación adicional.
+La [transcripción original de PowerShell](sesion-20261112-233908.txt) contiene los comandos, sus salidas y la anotación que Byron escribió después de reconectar.
+
+Byron ejecutó la prueba entre la noche del 12 y la madrugada del 13 de noviembre de 2026, hora de Ecuador. El [mensaje de control](capturas/02-mensaje-recibido.png) `BYRON-R1-M0` se veía en Chrome y su recepción quedó anotada en PowerShell a las 23:41 del día 12.
+
+- [00:05 - Inicio del corte](capturas/03a-inicio-del-corte.png). Windows muestra el icono de red sin Internet y Chrome conserva el historial visible, incluido el mensaje de control.
+- [00:09 - Chrome después del envío](capturas/03b-chrome-despues-del-envio.png). En el [celular](capturas/r1-envio-desde-celular.png) ya se veían `BYRON-R1-M1`, `BYRON-R1-M2` y `BYRON-R1-M3`. En esta captura de Chrome todavía no aparecen. PowerShell muestra un registro manual y la barra de tareas muestra el icono de Wi-Fi, por lo que esta imagen documenta lo que se veía en Chrome en ese momento.
+- [00:19 - Estado después de reconectar](capturas/04-reconexion.png). Chrome muestra una entrada de cada uno de los tres mensajes en el orden M1, M2 y M3. Byron confirmó que aparecieron al reconectar, sin recargar Chrome. Las 00:19 son la hora de la captura. El instante de reconexión y el tiempo de recuperación quedaron sin medir.
+
+## Interpretación
+
+El cliente web conservó el historial visible durante el corte y mostró los tres mensajes después de recuperar la conexión. La recuperación fue automática en esta ronda desde la perspectiva de Byron. La aparición posterior de los mensajes ilustra la recuperación del estado visible de un cliente.
 
 La prueba no controla los servidores de Discord: una desconexión de cliente no es una partición entre réplicas. No demuestra consenso, persistencia ante caída del centro de datos, entrega exactamente una vez ni una clasificación CAP de toda la plataforma. La documentación del Gateway explica mecanismos disponibles para aplicaciones, pero esta prueba de interfaz no identifica cuál produjo la recuperación observada.
 
@@ -77,4 +86,4 @@ La prueba no controla los servidores de Discord: una desconexión de cliente no 
 
 ## Participación de Byron
 
-Byron debe ejecutar la prueba, registrar las observaciones, tomar capturas originales y explicar el resultado. El procedimiento fue preparado con apoyo de Codex. Antes de ejecutarlo falta confirmar que dispone del teléfono y del canal privado de prueba.
+Byron ejecutó la primera ronda, tomó las capturas originales y confirmó cómo aparecieron los mensajes. Codex apoyó la preparación del procedimiento y la organización de los archivos.

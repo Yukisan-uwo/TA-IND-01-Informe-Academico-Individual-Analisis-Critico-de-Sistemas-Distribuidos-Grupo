@@ -1,0 +1,36 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20261112233909
+Nombre de usuario: DESKTOP-TBGTULD\USER
+Usuario RunAs: DESKTOP-TBGTULD\USER
+Nombre de la configuración: 
+Máquina: DESKTOP-TBGTULD (Microsoft Windows NT 10.0.26300.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 9888
+PSVersion: 5.1.26100.9818
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9818
+BuildVersion: 10.0.26100.9818
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es resultados/sesion-20261112-233908.txt
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> Get-Date -Format o
+2026-11-12T23:39:09.6410507-05:00
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> whoami
+desktop-tbgtuld\user
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> Write-Output ("{0} | BYRON-R1-M0 apareció en Chrome con la laptop conectada" -f (Get-Date -Format o))
+2026-11-12T23:41:44.1210097-05:00 | BYRON-R1-M0 apareció en Chrome con la laptop conectada
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> Write-Output ("{0} | R1: laptop sin Internet" -f (Get-Date -Format o))
+2026-11-13T00:05:46.0111872-05:00 | R1: laptop sin Internet
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> Write-Output ("{0} | R1: laptop sin Internet" -f (Get-Date -Format o))
+2026-11-13T00:09:05.0538778-05:00 | R1: laptop sin Internet
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> Write-Output 'R1 (anotación posterior): al reconectar, M1, M2 y M3 aparecieron en Chrome en orden y sin recargar. El tiempo de recuperación no se midió.'
+R1 (anotación posterior): al reconectar, M1, M2 y M3 aparecieron en Chrome en orden y sin recargar. El tiempo de recuperación no se midió.
+PS D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20261113004302
+**********************
