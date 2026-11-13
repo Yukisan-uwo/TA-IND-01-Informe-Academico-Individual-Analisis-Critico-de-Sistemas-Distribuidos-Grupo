@@ -1,195 +1,101 @@
-# TA-IND-01 - Análisis crítico de RabbitMQ
+# TA-IND-01 — Análisis crítico de RabbitMQ
 
 **Universidad:** Universidad Técnica Estatal de Quevedo  
 **Facultad:** Ciencias de la Computación  
 **Carrera:** Software  
 **Asignatura:** Aplicaciones Distribuidas  
-**Actividad:** TA-IND-01 - Informe Académico Individual  
-**Estudiante:** Luis Mario Zambrano Párraga
+**Actividad:** TA-IND-01 — Informe Académico Individual  
+**Estudiante:** Luis Mario Zambrano Párraga  
+**Paralelo:** Séptimo nivel, paralelo A
 
-## 1. Descripción del proyecto
+## 1. Descripción
 
-Este repositorio contiene el desarrollo de la actividad TA-IND-01, centrada en el análisis crítico de RabbitMQ como sistema distribuido de mensajería.
+Este repositorio reúne el trabajo realizado para la actividad TA-IND-01, centrado en el análisis crítico de RabbitMQ como sistema distribuido de mensajería.
 
-El trabajo estudia su arquitectura, las transparencias de distribución, el teorema CAP y su extensión PACELC, los modelos de comunicación y la tolerancia a fallos. También se considera Apache Kafka como sistema de comparación.
+El estudio aborda la arquitectura del sistema, las transparencias de distribución, los modelos de comunicación, CAP, PACELC y la tolerancia a fallos. También se compara RabbitMQ con Apache Kafka para identificar diferencias y compromisos entre sus diseños.
 
-El análisis combina investigación bibliográfica con pruebas realizadas en un entorno local de Docker.
+El análisis combina la revisión de publicaciones científicas con experimentos propios realizados en un clúster local de tres nodos RabbitMQ.
 
 ## 2. Objetivo
 
-Analizar el funcionamiento de RabbitMQ en un entorno distribuido, mediante pruebas de comunicación, replicación y tolerancia a fallos, para identificar sus características, ventajas y limitaciones frente a Apache Kafka.
+Analizar el comportamiento de RabbitMQ mediante pruebas de comunicación, replicación, consenso y recuperación ante fallos, para evaluar sus características, limitaciones y compromisos frente a Apache Kafka.
 
 ## 3. Organización del repositorio
 
-- **bibliografia/**: referencias científicas y registros de lectura.
-- **diagramas/**: bosquejo inicial de la arquitectura y diagrama definitivo.
-- **experimento/**: configuración de RabbitMQ, programas Python, capturas y resultados.
-- **informe/**: documentos LaTeX y PDF del informe académico.
-- **BITACORA.md**: registro de actividades, dificultades, soluciones y tiempo dedicado.
-- **README.md**: descripción del proyecto e instrucciones para reproducir las pruebas.
+| Elemento | Contenido |
+|---|---|
+| `bibliografia/` | Fuentes científicas y registros de lectura |
+| `diagramas/` | Bosquejo inicial y diagrama de arquitectura |
+| `experimento/` | Configuración, programas, capturas y resultados |
+| `informe/` | Informe académico elaborado en LaTeX |
+| `BITACORA.md` | Registro de las sesiones de trabajo |
+| `README.md` | Presentación y guía general del proyecto |
 
 ## 4. Entorno experimental
 
-Para las pruebas se utiliza la siguiente configuración:
+Las pruebas se desarrollaron en Windows utilizando Docker Desktop y RabbitMQ 4.2.9 sobre Erlang 27.3.4.19.
 
-| Componente | Versión o configuración |
+Se configuró un clúster de tres nodos y una cola de quórum denominada `taind01_mensajes`. Para la comunicación desde aplicaciones Python 3.11.9 se utilizó Pika 1.4.4.
+
+Los tres nodos se ejecutaron en contenedores sobre una misma computadora, por lo que las pruebas representan fallos de nodos individuales, no de servidores físicos independientes.
+
+## 5. Resumen de experimentos
+
+| Prueba | Resultado observado |
 |---|---|
-| Sistema operativo | Windows |
-| Contenedores | Docker Desktop |
-| RabbitMQ | 4.2.9 |
-| Erlang | 27.3.4.19 |
-| Nodos RabbitMQ | 3 |
-| Tipo de cola | Quorum |
-| Cola utilizada | taind01_mensajes |
-| Cliente de mensajería | Python 3.11.9 |
-| Biblioteca AMQP | Pika 1.4.4 |
+| Formación del clúster | Tres nodos integrados correctamente |
+| Creación de cola de quórum | Tres miembros con replicación mediante Raft |
+| Mensajería desde el panel web | Tres mensajes publicados y recuperados |
+| Mensajería mediante Python | Cinco mensajes publicados y consumidos con confirmaciones |
+| Caída del líder | `rabbit3` asumió el liderazgo y se conservaron los cinco mensajes |
+| Reincorporación | El nodo detenido regresó y sincronizó su estado |
+| Pérdida de mayoría | Con un solo miembro activo no se observó un líder operativo |
+| Recuperación del quórum | Se conservaron y recuperaron cinco mensajes |
+| Sincronización final | Las tres réplicas alcanzaron el índice de confirmación 70 |
 
-El entorno contiene tres contenedores RabbitMQ conectados en un clúster. Las pruebas utilizan una cola de quórum distribuida entre sus tres nodos.
+Las pruebas permitieron estudiar el comportamiento de la mensajería replicada ante fallos de contenedores. No se realizaron pruebas de partición de red real ni mediciones comparativas de latencia.
 
-Todos los contenedores se ejecutan en una misma computadora, por lo que el entorno permite estudiar fallos individuales de contenedores, pero no representa tres servidores físicos independientes.
+**Documentación técnica:** [Procedimientos y resultados de los experimentos](experimento/README.md).
 
-## 5. Pruebas realizadas
+## 6. Informe académico
 
-### 5.1. Inicialización del entorno
+El informe se desarrollará en LaTeX e incluirá:
 
-Se configuraron tres contenedores RabbitMQ mediante Docker Compose y se verificó su funcionamiento desde PowerShell.
+- Arquitectura y transparencias de distribución.
+- Análisis de CAP y PACELC.
+- Modelos de comunicación y tolerancia a fallos.
+- Interpretación de los experimentos realizados.
+- Comparación crítica entre RabbitMQ y Apache Kafka.
+- Conclusiones sustentadas en resultados y bibliografía.
 
-### 5.2. Formación del clúster
+### Compilación
 
-Se incorporaron los nodos `rabbit@rabbit2` y `rabbit@rabbit3` al clúster iniciado por `rabbit@rabbit1`.
+El informe utilizará `biblatex` con estilo IEEE y el sistema de procesamiento bibliográfico `biber`.
 
-El comando `rabbitmqctl cluster_status` permitió comprobar que los tres nodos estaban activos y que no se reportaban particiones de red.
+La secuencia de compilación prevista es:
 
-### 5.3. Creación de una cola de quórum
+```text
+pdflatex → biber → pdflatex → pdflatex
+```
 
-Se creó la cola `taind01_mensajes`, de tipo Quorum, y se consultó su estado para identificar los miembros y el líder.
-
-### 5.4. Publicación y consumo desde RabbitMQ Management
-
-Se publicaron tres mensajes desde la interfaz web.
-
-Antes del consumo se observaron tres mensajes pendientes y ninguno sin confirmar. Después de recuperarlos con confirmación automática, la cola quedó vacía.
-
-### 5.5. Publicación y consumo mediante Python
-
-Se desarrollaron dos programas utilizando la biblioteca Pika:
-
-- `productor.py`: publica cinco mensajes persistentes utilizando confirmaciones del broker.
-- `consumidor.py`: recupera los mensajes y envía confirmaciones manuales mediante `basic_ack()`.
-
-El productor obtuvo confirmaciones de cinco publicaciones. Posteriormente, el consumidor recuperó los cinco mensajes y la consulta final mostró cero mensajes pendientes y cero sin confirmar.
-
-Los registros y las capturas se encuentran en `experimento/resultados/` y `experimento/capturas/`.
-
-## 6. Reproducción de las pruebas
-
-### 6.1. Requisitos
-
-- Docker Desktop con soporte para contenedores Linux.
-- Docker Compose.
-- Python 3.11.
-- Biblioteca Pika, indicada en `requirements.txt`.
-
-### 6.2. Inicializar RabbitMQ
-
-Desde la carpeta `experimento/`, validar la configuración y crear los contenedores:
-
-1. `docker compose config -q`
-2. `docker compose up -d`
-3. `docker compose ps`
-
-Para comprobar que el primer nodo responde:
-
-`docker compose exec rabbit1 rabbitmq-diagnostics -q ping`
-
-### 6.3. Formar el clúster
-
-En una instalación nueva, con los tres nodos iniciados y sin datos previos, ejecutar:
-
-1. `docker compose exec rabbit2 rabbitmqctl join_cluster rabbit@rabbit1`
-2. `docker compose exec rabbit3 rabbitmqctl join_cluster rabbit@rabbit1`
-
-Verificar el resultado:
-
-`docker compose exec rabbit1 rabbitmqctl cluster_status`
-
-Estos comandos de unión no deben repetirse innecesariamente si el clúster ya está formado.
-
-### 6.4. Crear la cola
-
-Ingresar a RabbitMQ Management mediante `http://localhost:15672`.
-
-Utilizar las credenciales de laboratorio definidas en la configuración local y crear una cola con estas características:
-
-- Nombre: `taind01_mensajes`
-- Tipo: `Quorum`
-- Virtual host: `/`
-- Tamaño inicial del grupo: predeterminado (tres miembros en este entorno).
-
-Consultar su estado mediante:
-
-`docker compose exec rabbit1 rabbitmq-queues quorum_status --vhost / taind01_mensajes`
-
-### 6.5. Ejecutar los programas Python
-
-Instalar las dependencias desde `experimento/`:
-
-`python -m pip install -r requirements.txt`
-
-Configurar en PowerShell la variable de entorno `RABBITMQ_PASSWORD` con la contraseña del laboratorio definida en Docker Compose.
-
-Ejecutar el productor:
-
-`python productor.py`
-
-Consultar los mensajes pendientes:
-
-`docker compose exec rabbit1 rabbitmqctl list_queues name type messages_ready messages_unacknowledged`
-
-Ejecutar el consumidor:
-
-`python consumidor.py`
-
-Volver a consultar la cola para verificar el resultado.
-
-Los programas se ejecutan desde la carpeta `experimento/` y se conectan al primer nodo mediante `127.0.0.1:5672`.
+**Pendiente de completar:** nombre y ruta del archivo principal, comandos exactos, dependencias de LaTeX y comprobación de que el PDF se regenera correctamente desde el repositorio.
 
 ## 7. Evidencias de autoría
 
-El repositorio conserva evidencias obtenidas durante el desarrollo:
+Se conservan capturas originales de la ejecución de RabbitMQ, archivos de configuración, programas Python y resultados de las pruebas.
 
-- Capturas del funcionamiento de los contenedores.
-- Resultados de la formación del clúster.
-- Capturas de la cola de quórum y sus miembros.
-- Publicación y recuperación de mensajes desde la interfaz web.
-- Ejecución de los programas Python.
-- Registros de comandos y resultados obtenidos.
-- Bosquejo de arquitectura dibujado a mano.
-- Bitácora de las sesiones de trabajo.
+El repositorio también contiene la bitácora de trabajo y el bosquejo inicial de la arquitectura elaborado a mano.
 
-Los resultados se documentan con base en las observaciones efectuadas durante las pruebas.
+Las capturas de lectura científica, el diagrama definitivo y los demás anexos se incorporarán conforme avance el informe.
 
-## 8. Informe académico y compilación
-
-El informe se desarrollará en LaTeX, utilizando `biblatex` con estilo IEEE para gestionar las referencias bibliográficas.
-
-La compilación prevista utilizará `pdflatex` y `biber`, en el siguiente orden:
-
-1. `pdflatex`
-2. `biber`
-3. `pdflatex`
-4. `pdflatex`
-
-**Pendiente:** Todavia no estoy en esta fase.
-
-## 9. Sustentación
+## 8. Sustentación
 
 **Video de sustentación:** pendiente de incorporación.
 
-Se agregará aquí el enlace al video una vez realizada la sustentación.
+El enlace al video de 3 a 5 minutos se publicará en este apartado una vez completada la grabación.
 
-## 10. Estado actual
+## 9. Estado del proyecto
 
-Se completaron las pruebas iniciales de configuración del clúster, creación de la cola y comunicación mediante la interfaz web y programas Python.
+**Completado:** preparación del entorno, formación del clúster y pruebas de mensajería, replicación, caída del líder, pérdida de mayoría y recuperación.
 
-**Actividades pendientes:** experimentos de tolerancia a fallos y recuperación, análisis bibliográfico y comparativo, elaboración del diagrama definitivo, informe LaTeX y video de sustentación.
+**Pendiente:** revisión bibliográfica, análisis crítico comparativo, diagrama definitivo, informe LaTeX, capturas de lectura y video de sustentación.
