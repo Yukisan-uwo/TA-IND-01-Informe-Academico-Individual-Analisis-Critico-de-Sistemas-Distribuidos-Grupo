@@ -1,0 +1,79 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx,float,booktabs,tabularx,csquotes,hyperref}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\IfFileExists{referencias.bib}{\addbibresource{referencias.bib}}{}
+\newcommand{\evidencia}[3]{\begin{figure}[H]\centering\IfFileExists{#1}{\includegraphics[width=\linewidth,height=.65\textheight,keepaspectratio]{#1}}{\fbox{Imagen pendiente de carga}}\caption{#2}\label{#3}\end{figure}}
+\begin{document}
+\begin{titlepage}\centering
+{\Large Universidad Técnica Estatal de Quevedo\par}
+Facultad de Ciencias de la Computación (FCC)\par
+Carrera de Ingeniería de Software\par
+\vfill
+Aplicaciones Distribuidas — TA-IND-01\par
+\vspace{1cm}
+{\LARGE\bfseries Análisis crítico de Apache Cassandra\par}
+Replicación, consistencia y disponibilidad de lectura\par
+\vfill
+Kevin Leonel García Bazurto\par
+Paralelo A\par
+13 de noviembre de 2026\par
+\href{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}{Repositorio en GitHub}
+\end{titlepage}
+\begin{abstract}
+% Redactar al final: 150–200 palabras.
+\end{abstract}
+\section{Introducción}
+% Problema, usuarios, escala y justificación con fuentes.
+\section{Arquitectura del sistema}
+% Componentes, comunicación, diagrama propio y evolución desde el Anexo A.
+\section{Análisis con los conceptos de la Unidad 1}
+\subsection{Transparencias de distribución}
+\subsection{CAP y PACELC}
+\subsection{Modelos de comunicación}
+\subsection{Tolerancia a fallos}
+\section{Experimentación propia}
+\subsection{Objetivo y configuración}
+La prueba evaluó si Cassandra podía devolver el mismo registro con \texttt{ONE} y \texttt{QUORUM} al reducir el número de réplicas activas. El entorno usó Cassandra 5.0.9 en Docker, tres nodos en \texttt{dc1} y un factor de replicación de tres.
+\evidencia{Evidencias/01-cluster-tres-nodos.jpeg}{Estado inicial del clúster con tres nodos activos.}{fig:cluster}
+\subsection{Procedimiento y resultados}
+El registro con \texttt{id = 1} se insertó con \texttt{ALL}, que exigía la confirmación de las tres réplicas. Se mantuvo activo \texttt{taind-cas1} como coordinador de la consulta. Los comandos y las salidas se documentan en \path{Experimento/prueba-cassandra.md}.
+
+
+
+
+Con tres réplicas activas, ambas lecturas devolvieron el registro.
+\evidencia{Evidencias/02-lecturas-tres-replicas.png}{Lecturas con tres réplicas activas.}{fig:tres}
+
+
+
+
+Después de detener \texttt{taind-cas3}, se repitieron ambas lecturas con dos réplicas activas (Figura~\ref{fig:dos}).
+\evidencia{Evidencias/03-lecturas-dos-replicas.png}{Lecturas tras detener el tercer nodo.}{fig:dos}
+
+
+
+
+Al detener también \texttt{taind-cas2}, \texttt{ONE} devolvió el registro y \texttt{QUORUM} produjo un error \texttt{Unavailable}. Cassandra indicó dos réplicas requeridas y una disponible.
+\evidencia{Evidencias/04-lecturas-una-replica.png}{Lecturas con una réplica activa.}{fig:una}
+\subsection{Interpretación}
+En este escenario, \texttt{ONE} pudo completar la lectura con la réplica disponible. \texttt{QUORUM} requería dos respuestas de las tres réplicas configuradas. El resultado muestra cómo el nivel de consistencia afectó la disponibilidad de la lectura durante la detención controlada de nodos.
+\section{Ejemplos del entorno del estudiante}
+% Dos observaciones propias y su relación con los conceptos de la unidad.
+\section{Análisis comparativo}
+% Confirmar el comparador y discutir al menos cinco criterios con fuentes.
+\section{Postura crítica}
+\section{Conclusiones}
+\section{Declaración de uso de inteligencia artificial}
+% Identificar herramienta, versión verificable, usos y comprobaciones.
+\IfFileExists{referencias.bib}{\printbibliography[title={Referencias}]}{}
+\clearpage
+\section*{Anexos}
+\appendix
+\section{Esquema inicial a mano}
+\evidencia{esquema-inicial.jpeg}{Bosquejo inicial del clúster Cassandra.}{fig:esquema}
+\section{Evidencias de lectura de las fuentes}
+% Tres capturas anotadas con su página y cita correspondiente.
+\end{document}
