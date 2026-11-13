@@ -28,8 +28,16 @@ Los identificadores 110, 158 y 104707 son números de artículo y se guardan com
 
 - Confirmar la indexación de Journal of Parallel and Distributed Computing en una fuente oficial. [Computing](https://link.springer.com/journal/607) y [Journal of Cloud Computing](https://link.springer.com/journal/13677/aims-and-scope) declaran SCIE.
 - Abrir personalmente cada DOI y contrastar los datos con el artículo, además de esta revisión asistida.
-- Tomar tres capturas de lectura anotadas e indicar sus páginas reales. No hay capturas de lectura preparadas en este aporte.
+- Tomar las tres capturas de lectura con subrayado y una nota propia. Guardarlas en `evidencias/lecturas/`. Mantener visible el número de página del artículo o del visor.
 - Revisar la fecha o versión de la documentación viva. La fecha de consulta es distinta de la fecha de publicación.
 - Conservar en la bibliografía final únicamente las obras citadas en el texto y compilar con biblatex en estilo IEEE.
 
-Hay nueve entradas iniciales en referencias.bib. La selección final depende de las fuentes que se citen y de la comprobación de fechas e indexación.
+La bibliografía contiene once entradas. La selección final depende de las fuentes que se citen y de la comprobación de fechas e indexación.
+
+## Páginas para el Anexo B
+
+1. **Ferreira et al. (2024), página 14 de 16.** En *Statistical analysis*, subrayar el final del párrafo que resume las tablas 6 y 7. Los cinco escenarios multirregión que evaluaron mostraron diferencias significativas al cambiar el nivel de consistencia. La nota puede responder por qué ese resultado ayuda a discutir PACELC y por qué el estudio no mide la latencia de Discord. Guardar como `01-ferreira-consistencia.png`. Cita `ferreira2024consistency`, sección CAP y PACELC. [PDF editorial actualizado](https://link.springer.com/content/pdf/10.1186/s13677-024-00716-7.pdf)
+2. **Bação y Guerreiro (2026), página 4 de 32.** En la sección 2.4, *Event-driven architecture*, subrayar las primeras líneas sobre publicar y recibir eventos de forma asíncrona. La nota puede explicar la diferencia entre recibir un evento y pedir el historial mediante una solicitud. Guardar como `02-bacao-eventos.png`. Cita `bacao2026consistency`, sección Modelos de comunicación. [PDF editorial](https://link.springer.com/content/pdf/10.1007/s00607-026-01701-5.pdf)
+3. **Kokociński et al. (2023), página 11 de 18.** En la continuación de la sección 6.2, *Replica crashes and phantom operations*, subrayar donde describen una actualización confirmada que se pierde tras fallar una réplica. La nota puede explicar qué diferencia hay entre ese fallo del servidor y el corte de Internet de la laptop en la prueba. Guardar como `03-kokocinski-fallos.png`. Cita `kokocinski2023correctness`, sección CAP y PACELC. [PDF alojado por el autor](https://www.cs.put.poznan.pl/pawelw/pdf/jpdc23-journal.pdf)
+
+Las páginas y citas fueron ubicadas con apoyo de Codex. El subrayado, la anotación y la captura de cada lectura corresponden al estudiante.

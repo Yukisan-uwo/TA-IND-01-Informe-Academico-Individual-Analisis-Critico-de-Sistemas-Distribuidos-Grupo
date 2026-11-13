@@ -32,3 +32,19 @@
 - Chrome recibió el mensaje de control y también recibió el segundo mensaje mientras DevTools indicaba `Offline`. Se restauró `No throttling` y se registró el resultado en EXPERIMENTO.md.
 - El control no aisló a Chrome. Para la prueba principal se usará el celular con datos móviles y un corte real de conexión en la laptop. El tiempo de trabajo personal de Byron queda pendiente de registrar.
 - A petición de Byron, Codex redactó los mensajes de los dos commits de esta actualización tomando como referencia los tres mensajes anteriores que él escribió.
+
+### Borrador del informe
+
+- Con apoyo de Codex se preparó main.tex con la estructura de la consigna, las referencias IEEE y el resultado del piloto asistido. Se anotaron las secciones por completar y los comandos para compilar.
+- Quedan pendientes las capturas originales y las observaciones de la prueba con el celular. El tiempo de trabajo personal lo registrará Byron.
+
+## 2026-11-13 - Primera ronda del experimento
+
+- Byron ejecutó la prueba de desconexión y reconexión con Chrome y el celular. Al recuperar la conexión, los tres mensajes aparecieron sin recargar Chrome.
+- La hora exacta de reconexión quedó sin medir. Se conservó la hora original de la captura y se registró la confirmación de Byron en el informe y en EXPERIMENTO.md.
+- Se ordenaron las fuentes del informe, el procedimiento y las capturas. Se verificó que los archivos originales de las capturas conservaran el mismo contenido al moverlos. Se incorporó el ejemplo de Byron sobre el aviso «Reconectando».
+- Byron cerró la transcripción de PowerShell. Se comprobó que conserva el registro del mensaje de control, las anotaciones del corte y la observación posterior a la reconexión.
+- Byron envió ZULIP-M1 en el tema Prueba TA-IND-01 del canal general de la demo. Codex preparó el borrador del mensaje, comprobó que el mensaje siguiera visible al volver al tema y guardó la captura para el informe.
+- Codex ubicó los fragmentos de tres artículos citados para el Anexo B. Byron hará las anotaciones y las capturas de lectura.
+- Codex redactó los mensajes de los dos commits de esta actualización, sobre la prueba de Discord y el borrador comparativo. Los mensajes de autoría del estudiante se registran en sus propios commits.
+- Tiempo de trabajo personal: pendiente de registrar por Byron.
