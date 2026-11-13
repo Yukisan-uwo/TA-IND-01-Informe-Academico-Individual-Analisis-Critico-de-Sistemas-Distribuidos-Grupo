@@ -18,11 +18,11 @@ Pregunta de investigación: ¿qué compromisos entre latencia, consistencia y re
 
 CAP y PACELC se analizarán por componente y operación, según las garantías documentadas. No se atribuirá una clasificación única a toda la plataforma a partir de la base de datos que utiliza. La documentación histórica se identificará por fecha, sin asumir que describe toda la arquitectura actual.
 
-## Comparación propuesta
+## Comparación con Zulip
 
-Matrix es el candidato para comparar la mensajería de Discord con un sistema de comunicación federado. Su especificación pública permite estudiar las API entre clientes y servidores y entre servidores. Los criterios serán: organización de componentes, comunicación, replicación, consistencia, recuperación de fallos y latencia. La elección del despliegue experimental queda pendiente de comprobar los recursos disponibles.
+La comparación sigue el mismo recorrido en Discord y Zulip: enviar un mensaje de texto, entregarlo en tiempo real y consultarlo en el historial tras una desconexión. En Zulip se estudiará el despliegue documentado con la aplicación y PostgreSQL en servidores distintos. Los criterios son arquitectura, comunicación, transparencias, almacenamiento, consistencia y latencia, y recuperación de fallos.
 
-Fuente: [especificación de Matrix](https://spec.matrix.org/latest/).
+[Arquitectura de Zulip](https://zulip.readthedocs.io/en/stable/overview/architecture-overview.html) · [Despliegue de PostgreSQL](https://zulip.readthedocs.io/en/stable/production/postgresql.html)
 
 ## Fuentes iniciales y su uso
 
@@ -36,7 +36,7 @@ La bibliografía inicial está en [referencias.bib](referencias.bib). La [revisi
 
 ## Experimento diseñado
 
-El [procedimiento del experimento](EXPERIMENTO.md) utiliza Discord web y un teléfono para observar la recuperación de mensajes tras desconectar únicamente el cliente web. Incluye controles, tres repeticiones, comandos de registro y cuatro capturas previstas. No se ha ejecutado ni se han generado resultados. Matrix se mantiene como comparación documental propuesta.
+El [procedimiento del experimento](EXPERIMENTO.md) registra un piloto en el que Chrome recibió un mensaje mientras DevTools indicaba `Offline`. La prueba principal se hará con Discord web en la laptop y un teléfono con datos móviles. Incluye tres repeticiones, comandos de registro y cuatro capturas previstas. La comparación con Zulip se basa en su documentación técnica.
 
 ## Entregables pendientes
 
@@ -51,7 +51,7 @@ El [procedimiento del experimento](EXPERIMENTO.md) utiliza Discord web y un tel�
 
 ## Compilación y video
 
-Todavía no existe un informe compilable ni un video. Al incorporar las fuentes LaTeX se documentarán el archivo principal, las dependencias y los comandos concretos de la secuencia pdflatex, biber, pdflatex y pdflatex. Aquí se añadirá también el enlace público de acceso al video.
+Se comprobó en Windows la secuencia pdfLaTeX, Biber, pdfLaTeX y pdfLaTeX con MiKTeX 25.12, Biber 2.21 y las nueve entradas de referencias.bib. El documento de prueba usa babel en español y biblatex con estilo IEEE. El archivo principal del informe y el enlace al video se agregarán cuando estén preparados.
 
 ## Entrega
 

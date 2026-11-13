@@ -18,3 +18,17 @@
 - EXPERIMENTO.md contiene los pasos, comandos de registro, cuatro capturas previstas, tres repeticiones y límites de interpretación. La ejecución está pendiente de Byron.
 - Los cambios fueron preparados con apoyo de Codex. No se han generado evidencias personales ni resultados experimentales.
 - Byron redactó los tres mensajes de commit para tema, fuentes y procedimiento. Se organizaron los archivos en esos tres avances para su publicación. El tiempo de trabajo personal sigue pendiente de registrar por el estudiante.
+
+### Preparación del entorno y de la comparación con Zulip
+
+- Byron eligió Zulip para la comparación. Se actualizó la bibliografía con su arquitectura, el flujo de envío de mensajes y la configuración de PostgreSQL en un servidor separado.
+- Se incorporó el informe técnico de Discord sobre la caída de autenticación del 6 de noviembre de 2023 como caso para estudiar tolerancia a fallos.
+- Con apoyo de Codex se instaló MiKTeX 25.12. Se comprobó que pdfLaTeX y Biber 2.21 generan una página de prueba con citas IEEE y las nueve entradas bibliográficas.
+- Se precisaron los pasos para registrar el corte y la reconexión en Discord web. Queda pendiente la ejecución de Byron con su celular y el registro del tiempo de trabajo personal.
+
+### Piloto en la PC
+
+- Byron creó el servidor privado de prueba y abrió el canal en Chrome. Codex operó Chrome y el navegador integrado durante la ronda piloto.
+- Chrome recibió el mensaje de control y también recibió el segundo mensaje mientras DevTools indicaba `Offline`. Se restauró `No throttling` y se registró el resultado en EXPERIMENTO.md.
+- El control no aisló a Chrome. Para la prueba principal se usará el celular con datos móviles y un corte real de conexión en la laptop. El tiempo de trabajo personal de Byron queda pendiente de registrar.
+- A petición de Byron, Codex redactó los mensajes de los dos commits de esta actualización tomando como referencia los tres mensajes anteriores que él escribió.

@@ -1,6 +1,6 @@
 # Experimento: recuperación de mensajes tras desconectar un cliente
 
-Estado: procedimiento diseñado, todavía no ejecutado. No contiene resultados ni capturas experimentales.
+Estado: se ejecutó el piloto asistido en una PC. La prueba principal con dos dispositivos queda pendiente.
 
 ## Objetivo
 
@@ -10,15 +10,34 @@ Observar cómo un cliente web de Discord recupera mensajes después de una inter
 
 - Un servidor privado de prueba de Byron, con un canal de texto dedicado y sin otros participantes.
 - Discord web en Chrome o Edge en la laptop y Discord en un teléfono, ambos con la cuenta de Byron.
-- El teléfono permanece conectado. La interrupción afecta únicamente a la pestaña de prueba del navegador, mediante DevTools, Network, Offline. No se desconecta la red completa de la laptop.
-- Antes de medir, comprobar que Offline interrumpe efectivamente la conexión de esa pestaña. Si continúan llegando mensajes, la prueba no es válida y debe ajustarse antes de registrar resultados.
+- El teléfono usa datos móviles y permanece conectado durante toda la prueba. La laptop usa Wi-Fi, que se desconectará durante el corte. Verificar que la laptop no tenga otra conexión activa y que el teléfono siga enviando mensajes. Usar este método en las tres rondas y mostrar el indicador de red de Windows en la captura del corte.
 - Registrar versiones de navegador y aplicación, tipo de conexión y fecha. No mostrar contraseñas, tokens ni conversaciones ajenas en las capturas.
+
+## Prueba piloto en una sola PC
+
+1. Abrir el mismo canal privado de prueba en Chrome y Edge, con la cuenta de Byron en ambos. Edge será el emisor y Chrome el receptor.
+2. Con ambos conectados, enviar `BYRON-PILOTO-M0` desde Edge y comprobar que aparezca en Chrome. Capturar el estado inicial y la recepción en Chrome.
+3. Activar `Network > Offline` en DevTools de Chrome. Mantener Edge conectado y enviar desde allí `BYRON-PILOTO-M1`. Registrar si el mensaje aparece en Chrome durante el corte y tomar la tercera captura. Si llega durante el corte, registrar que el aislamiento no funcionó.
+4. Restaurar `No throttling` en Chrome. Registrar si aparece `BYRON-PILOTO-M1`, si hizo falta recargar y cuánto tardó aproximadamente. Tomar la cuarta captura.
+
+En esta variante, los dos navegadores comparten la conexión física de la PC. Mantener activo el Wi-Fi durante toda la prueba. Guardar las cuatro capturas originales con el prefijo `piloto-` y aplicar el registro de PowerShell de la siguiente sección. Identificar como piloto las observaciones y la participación de Codex si las hubo.
+
+### Resultado del piloto
+
+El 12 de noviembre de 2026, en el canal privado `#general` de `TA-IND-01 Piloto`, se usó el navegador integrado como emisor y Chrome como receptor, ambos en la misma PC. Codex operó los dos clientes durante el piloto.
+
+- A las 20:00, hora de Ecuador, se envió `BYRON-PILOTO-M0` y se verificó su recepción en Chrome.
+- A las 20:02 se envió `BYRON-PILOTO-M1` con DevTools de Chrome en `Offline`. El mensaje apareció en Chrome mientras el selector todavía indicaba `Offline`.
+- Se restauró `No throttling` y se comprobó que ambos mensajes seguían visibles.
+
+El control de desconexión falló. Esta ronda muestra que el ajuste de DevTools no aisló al receptor en las condiciones observadas. Para medir recuperación, usar Chrome en la laptop y el celular con datos móviles. Verificar el corte de la laptop antes de enviar los mensajes de la ronda. La captura del piloto se vio durante la sesión de Codex. Queda pendiente guardar las cuatro capturas de la prueba principal.
 
 ## Registro de sesión
 
-Abrir PowerShell dentro de la carpeta individual. Ejecutar una vez por sesión:
+Abrir PowerShell y ejecutar una vez por sesión:
 
 ```powershell
+Set-Location -LiteralPath 'D:\7mo Software\Aplicaciones Distribuidas\TA-IND-01\TA-IND-01-Loor Mendoza Byron Daniel'
 New-Item -ItemType Directory -Path resultados -Force | Out-Null
 $sesionDiscord = Get-Date -Format 'yyyyMMdd-HHmmss'
 Start-Transcript -Path "resultados/sesion-$sesionDiscord.txt"
@@ -39,14 +58,14 @@ Las marcas son manuales y tienen error de reacción humana; no representan laten
 
 1. Abrir el mismo canal en los dos dispositivos. Registrar el estado conectado, usuario y fecha. Tomar la captura 1.
 2. Enviar manualmente desde el teléfono un mensaje con identificador único, por ejemplo `BYRON-R1-M0`. Confirmar si aparece en la laptop y registrar lo observado. Tomar la captura 2.
-3. En DevTools de la pestaña de Discord, seleccionar Network, Offline. Esperar a que la interrupción sea observable. Registrar el cambio; no presuponer que un indicador visual aparece de inmediato.
-4. Desde el teléfono enviar tres mensajes, `BYRON-R1-M1`, `BYRON-R1-M2` y `BYRON-R1-M3`, dejando cinco segundos entre ellos. Comprobar que el teléfono los muestra y anotar si aparecen o no en la laptop desconectada. Tomar la captura 3 con el estado Offline y la terminal visibles. Puede añadirse una captura original del teléfono como respaldo.
-5. Restaurar No throttling en la pestaña de la laptop. Observar hasta 60 segundos si aparecen los tres mensajes, en qué orden y si se duplican. Registrar el tiempo aproximado hasta la recuperación. Si no aparecen, anotar el fallo antes de probar una recarga; registrar la recarga como intervención adicional. Tomar la captura 4.
-6. Repetir el ciclo tres veces con los prefijos `BYRON-R2` y `BYRON-R3`. No borrar ni reemplazar resultados inesperados.
+3. Desconectar el Wi-Fi de la laptop. Verificar que el indicador de red muestre que está desconectada y registrar el momento del corte.
+4. Desde el teléfono enviar tres mensajes, `BYRON-R1-M1`, `BYRON-R1-M2` y `BYRON-R1-M3`, dejando cinco segundos entre ellos. Comprobar que el teléfono los muestra y anotar cuáles aparecen en la laptop durante el corte. Tomar la captura 3 con el indicador de desconexión y la terminal visibles. Puede añadirse una captura original del teléfono como respaldo.
+5. Reconectar el Wi-Fi de la laptop. Observar hasta 60 segundos si aparecen los tres mensajes, en qué orden y si se duplican. Registrar el tiempo aproximado hasta la recuperación. Si siguen faltando al terminar el plazo, registrar el resultado antes de probar una recarga. Tomar la captura 4.
+6. Repetir el ciclo dos veces más con los prefijos `BYRON-R2` y `BYRON-R3`. Conservar los resultados inesperados.
 
 ## Resultados que se deben guardar
 
-Para cada repetición registrar: identificadores enviados, hora manual de desconexión y reconexión, mensajes visibles durante el corte, mensajes recuperados, orden, duplicados, tiempo aproximado y necesidad de recarga. Guardar el transcript y las capturas originales en `resultados/`. No existe aún un archivo de resultados porque la prueba no se ha realizado.
+Por cada repetición, registrar los identificadores enviados, la hora manual de desconexión y reconexión, los mensajes visibles durante el corte, los recuperados, su orden, los duplicados, el tiempo aproximado y si hizo falta recargar. Guardar el transcript y las capturas originales en `resultados/`. Para la primera ronda, usar nombres como `01-conectado.png`, `02-mensaje-recibido.png`, `03-sin-conexion.png` y `04-reconexion.png`.
 
 ## Interpretación prevista
 
@@ -54,7 +73,7 @@ Comparar el estado conectado con el desconectado y el recuperado. Si los mensaje
 
 La prueba no controla los servidores de Discord: una desconexión de cliente no es una partición entre réplicas. No demuestra consenso, persistencia ante caída del centro de datos, entrega exactamente una vez ni una clasificación CAP de toda la plataforma. La documentación del Gateway explica mecanismos disponibles para aplicaciones, pero esta prueba de interfaz no identifica cuál produjo la recuperación observada.
 
-Referencia técnica: https://docs.discord.com/developers/events/gateway.
+[Discord Gateway](https://docs.discord.com/developers/events/gateway) · [Modo Offline en Chrome DevTools](https://developer.chrome.com/docs/devtools/network/reference/#offline)
 
 ## Participación de Byron
 
