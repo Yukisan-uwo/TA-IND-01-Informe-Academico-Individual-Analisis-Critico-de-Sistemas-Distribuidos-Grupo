@@ -55,7 +55,7 @@ Los tres nodos se ejecutaron en contenedores sobre una misma computadora, por lo
 
 Las pruebas permitieron estudiar el comportamiento de la mensajería replicada ante fallos de contenedores. No se realizaron pruebas de partición de red real ni mediciones comparativas de latencia.
 
-**Documentación técnica:** [Procedimientos y resultados de los experimentos](experimento/README.md).
+**Documentación técnica:** [Procedimientos y resultados de los experimentos](experimento/README-Experimento.md).
 
 ## 6. Informe académico
 
