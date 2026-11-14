@@ -1,4 +1,8 @@
 % TA-IND-01 - Informe individual. Versión integrada, 13 nov 2026.
+% COMPILAR desde la carpeta informe/: pdflatex main.tex; biber main; pdflatex main.tex; pdflatex main.tex
+% ANTES DE ENTREGAR: comprobar que el URL funcione, y que el diagrama
+% de elaboración propia y la fotografía ORIGINAL del boceto en ../diagramas/.
+% IMPORTANTE: Las capturas corregidas por el estudiante en GitHub son las versiones definitivas.
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -25,7 +29,21 @@
 \pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
 \renewcommand{\arraystretch}{1.13}
 \captionsetup{font=small,labelfont=bf}
-\newcommand{\figoriginal}[2]{\IfFileExists{#1}{\includegraphics[width=\linewidth,height=#2,keepaspectratio]{#1}}{\fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering ARCHIVO PENDIENTE\par\tiny\detokenize{#1}}}}}
+% Comprobacion estricta: no se permite generar el PDF final con figuras ausentes.
+% Para pruebas temporales cambiar solo en una COPIA a \revisionborradortrue.
+\newif\ifrevisionborrador
+\revisionborradorfalse
+\newcommand{\figoriginal}[2]{%
+  \IfFileExists{#1}{%
+    \includegraphics[width=\linewidth,height=#2,keepaspectratio]{#1}%
+  }{%
+    \ifrevisionborrador
+      \fbox{\parbox[c][3cm][c]{0.9\linewidth}{\centering IMAGEN NO ENCONTRADA\par\tiny\detokenize{#1}}}%
+    \else
+      \PackageError{TA-IND-01}{Falta una imagen requerida: \detokenize{#1}}{Verifique nombre, extension y ubicacion desde la carpeta informe.}%
+    \fi
+  }%
+}
 \newcommand{\capturareal}[3]{\begin{figure}[H]\centering\figoriginal{../experimento/capturas/#1}{#2}\caption{#3}\end{figure}}
 \begin{document}
 \hypersetup{pageanchor=false}
@@ -69,7 +87,7 @@ Se escogió RabbitMQ porque fue posible ejecutarlo localmente, consultar sus nod
 \subsection{Componentes y comunicación}
 El recorrido de un mensaje empieza en el productor, que publica datos hacia un \emph{exchange}. El exchange decide a qué cola enviarlos utilizando reglas de enlace o \emph{bindings}. Finalmente, un consumidor obtiene los mensajes de la cola. Esta separación entre el envío, el enrutamiento y el consumo aparece explicada en el artículo de Maharjan et al. \cite{Maharjan2023}.
 
-En nuestro código se utilizó el exchange predeterminado, expresado con \texttt{exchange=""}. La clave de enrutamiento fue el nombre \path{taind01_mensajes}; de este modo el mensaje llegaba a la cola creada previamente. El productor se ejecutó desde Python 3.11.9 con Pika 1.4.4, conectado por AMQP 0-9-1 sobre TCP al puerto 5672. El consumidor usó inicialmente la misma dirección, pero se preparó para conectarse también al puerto 5673 cuando fue necesario. Esta configuración puede verificarse en \texttt{productor.py}, \texttt{consumidor.py} y en los registros del experimento.
+En el código del experimento utilicé el exchange predeterminado, expresado con \texttt{exchange=\char34\char34}. La clave de enrutamiento fue el nombre \path{taind01_mensajes}; de este modo el mensaje llegaba a la cola creada previamente. El productor se ejecutó desde Python 3.11.9 con Pika 1.4.4, conectado por AMQP 0-9-1 sobre TCP al puerto 5672. El consumidor usó inicialmente la misma dirección, pero se preparó para conectarse también al puerto 5673 cuando fue necesario. Esta configuración puede verificarse en \texttt{productor.py}, \texttt{consumidor.py} y en los registros del experimento.
 
 \subsection{Clúster y cola de quórum}
 La configuración incluyó tres brokers llamados \texttt{rabbit1}, \texttt{rabbit2} y \texttt{rabbit3}. Una cola de quórum no equivale a tres colas independientes: es una cola lógica con un registro replicado cuyos miembros siguen un protocolo de consenso. Uno actúa como líder y los demás como seguidores. Según la documentación oficial, las colas de quórum de RabbitMQ utilizan Raft, requieren una mayoría operativa y pueden elegir un nuevo líder cuando falla el anterior \cite{RabbitMQQuorum2026}.
@@ -111,7 +129,7 @@ En particular, la falla de \texttt{rabbit1} no fue completamente transparente pa
 \subsection{CAP y PACELC}
 CAP estudia el compromiso entre consistencia y disponibilidad cuando existe una partición de red; no afirma que en cualquier condición el sistema deba elegir solamente dos propiedades. PACELC amplía el análisis y también pregunta qué se prioriza entre latencia y consistencia cuando no hay partición. Ahmed et al. explican ambos marcos para sistemas replicados \cite{Ahmed2023}.
 
-La unidad analizada aquí es la \emph{cola de quórum}, no todo RabbitMQ. La documentación oficial indica que estas colas privilegian la consistencia de los datos confirmados: para operar necesitan una mayoría de sus miembros y no consideran seguros los mensajes que el broker aún no confirmó al productor \cite{RabbitMQQuorum2026}. En nuestro ensayo, al detener dos de tres nodos, el miembro restante quedó en estado \texttt{pre\_vote} y no se observó un líder operativo. Esto concuerda con la dependencia del quórum, aunque debemos dejar claro que los nodos fueron detenidos deliberadamente: \textbf{no se simuló una partición de red}.
+La unidad analizada aquí es la \emph{cola de quórum}, no todo RabbitMQ. La documentación oficial indica que estas colas privilegian la consistencia de los datos confirmados: para operar necesitan una mayoría de sus miembros y no consideran seguros los mensajes que el broker aún no confirmó al productor \cite{RabbitMQQuorum2026}. En el experimento realizado, al detener dos de tres nodos, el miembro restante quedó en estado \texttt{pre\_vote} y no se observó un líder operativo. Esto concuerda con la dependencia del quórum, aunque debemos dejar claro que los nodos fueron detenidos deliberadamente: \textbf{no se simuló una partición de red}.
 
 Con respecto a PACELC, las confirmaciones de publicación y la replicación entre varias réplicas implican coordinación adicional. En términos de diseño se privilegia la seguridad de los datos frente a la mínima latencia en ciertas operaciones. Sin embargo, no registramos tiempos de respuesta comparables, por lo que no asignamos una clasificación PACELC global ni afirmamos cuánto tarda cada operación en RabbitMQ. Esta conclusión es cualitativa y está apoyada en la documentación, no en una medición propia \cite{RabbitMQQuorum2026,Ahmed2023}.
 
@@ -132,7 +150,7 @@ Una segunda prueba detuvo \texttt{rabbit2} y después \texttt{rabbit3}. El nodo 
 \subsection{Un incidente real documentado}
 El postmortem de Clever Cloud correspondiente al 2 de agosto de 2024 describe una interrupción amplia de su plataforma causada inicialmente por problemas durante una intervención del sistema de mensajería Apache Pulsar y por la presión posterior sobre la infraestructura. En la cronología se indica que a las 16:05 (CEST) un nodo RabbitMQ del clúster utilizado por el orquestador estaba sobrecargado debido a un hipervisor saturado. A las 16:15, el equipo retiró ese nodo para impedir que siguiera ralentizando la orquestación, tras lo cual el orquestador volvió a funcionar correctamente \cite{CleverCloud2024}.
 
-Este caso no prueba un defecto del algoritmo Raft ni corresponde al mismo tipo de cola que nuestro ensayo. Su importancia es distinta: incluso si un broker tiene mecanismos de réplica, la disponibilidad real depende de los recursos de la infraestructura, de la supervisión y de la capacidad de aislar nodos problemáticos. En nuestro laboratorio los contenedores también compartían un equipo físico; por ello el postmortem refuerza la necesidad de no confundir tres procesos con tres servidores independientes.
+Este caso no prueba un defecto del algoritmo Raft ni corresponde al mismo tipo de cola que nuestro ensayo. Su importancia es distinta: incluso si un broker tiene mecanismos de réplica, la disponibilidad real depende de los recursos de la infraestructura, de la supervisión y de la capacidad de aislar nodos problemáticos. En este laboratorio los contenedores también compartían un equipo físico; por ello el postmortem refuerza la necesidad de no confundir tres procesos con tres servidores independientes.
 
 \section{Experimentación propia}
 \subsection{Entorno y procedimiento}
@@ -221,7 +239,7 @@ El segundo resultado es el alcance concreto de la tolerancia a fallos de la cola
 Finalmente, la replicación por consenso ayuda a conservar mensajes, pero no elimina el costo de coordinar réplicas ni resuelve automáticamente la recuperación de conexiones del cliente. La elección entre RabbitMQ y Kafka debe basarse en la necesidad de enrutamiento, retención, reprocesamiento y rendimiento, no en una clasificación general de mejor o peor. Para ampliar este estudio harían falta pruebas de latencia, particiones de red y procesos concurrentes, además de un despliegue sobre máquinas físicas independientes.
 
 \section*{Declaración de uso de inteligencia artificial}
-Para preparar esta actividad utilicé ChatGPT de OpenAI (GPT-6) como apoyo en la organización de los pasos, la elaboración y corrección de scripts de Python, la interpretación de material en inglés y la revisión de la redacción y del código LaTeX. Contrasté los comandos con las salidas de mi entorno Docker.
+Para preparar esta actividad utilicé ChatGPT de OpenAI (GPT-6) como apoyo en la organización de los pasos, la elaboración y corrección de scripts de Python, la búsqueda y verificación de publicaciones, la interpretación de material en inglés y la revisión de la redacción y del código LaTeX. Contrasté los comandos con las salidas de mi entorno Docker y las afirmaciones bibliográficas con los artículos y sus DOI. Las capturas experimentales y de lectura provienen de mi trabajo con la terminal, RabbitMQ y los PDF consultados. La asistencia de IA no sustituyó la ejecución de las pruebas ni las capturas originales. Las conclusiones distinguen lo observado en mi laboratorio de lo que indican las publicaciones consultadas.
 
 \printbibliography[title={Referencias}]
 \clearpage
