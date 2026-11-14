@@ -22,3 +22,12 @@ Al consultar el estado del primer nodo durante el arranque, `nodetool` indicó q
 Con una sola réplica activa, `ONE` devolvió el registro. La lectura con `QUORUM` falló porque Cassandra necesitaba dos réplicas y solo tenía una disponible.
 
 Organicé las cuatro capturas en [Evidencias](./Evidencias/) y documenté los comandos y resultados en [prueba-cassandra.md](./Experimento/prueba-cassandra.md).
+## 13 de noviembre de 2026 — Diagrama, lectura y sustentación
+
+**Tiempo dedicado:** [indica el tiempo aproximado que realmente dedicaste].
+
+Pasé mi bosquejo a Draw.io para mostrar cómo estaban conectados los tres nodos de Cassandra en Docker. Revisé tres artículos, marqué los
+fragmentos que usé en el informe y preparé las capturas para el Anexo B.
+
+Al preparar la sustentación, volví a leer la salida de la prueba con una réplica activa. Me fijé en que el error de `QUORUM` indicaba dos
+réplicas requeridas y una disponible. Usé esa captura para explicar en el video por qué `ONE` sí devolvió el registro.
