@@ -91,8 +91,8 @@
   \vspace*{0.9cm}
 \end{titlepage}
 
-\begin{abstract}
-\normalsize
+\begin{multicols}{2}
+\section*{Resumen}
 Este informe analiza la entrega y el almacenamiento de mensajes de texto
 en Discord y los compara con Zulip, una plataforma de chat para equipos.
 La comparación se apoya en la documentación técnica de ambos sistemas y
@@ -110,9 +110,7 @@ análisis distingue el historial persistente en PostgreSQL de la cola
 que entrega eventos. El resultado de la prueba tiene alcance local y
 el análisis de garantías internas depende de la operación y de la
 configuración documentadas.
-\end{abstract}
 
-\begin{multicols}{2}
 \section{Introducción}
 La pregunta del informe es qué compromisos entre latencia, consistencia y
 recuperación ante fallos se observan en la entrega y el almacenamiento de
@@ -133,7 +131,6 @@ situaciones cotidianas y estudiar aspectos que antes pasaba por alto,
 como qué ocurre con los mensajes cuando pierdo la conexión y vuelvo a
 conectarme.
 
-\columnbreak
 \section{Arquitectura}
 La API HTTP permite solicitar el historial y crear mensajes. La
 arquitectura publicada por Discord ubica servicios de datos entre la API
@@ -152,17 +149,17 @@ secuencia \cite{discordGateway}.
 La figura~\ref{fig:arquitectura-discord} digitaliza el bosquejo del
 Anexo~\ref{anexo:bosquejo}. La línea punteada indica la relación
 conceptual entre crear un mensaje y generar un evento para el cliente.
-\end{multicols}
 
 \begin{bloqueenlinea}
-  \includegraphics[width=0.90\linewidth]{figuras/arquitectura-discord.pdf}
+  \includegraphics[width=\linewidth]{figuras/arquitectura-discord.pdf}
   \caption{Flujos de solicitud, almacenamiento y entrega de eventos en Discord.}
   \label{fig:arquitectura-discord}
 \end{bloqueenlinea}
+\end{multicols}
 
 \clearpage
-\section{Conceptos de sistemas distribuidos}
 \begin{multicols}{2}
+\section{Conceptos distribuidos}
 \subsection{Transparencias}
 \begin{description}
   \item[Acceso.] Desde el cliente se consulta un canal a través de la
@@ -268,37 +265,29 @@ observaciones manuales. El procedimiento está en
 \texttt{resultados/EXPERIMENTO.md}. La transcripción original está en
 \path{resultados/sesion-20261112-233908.txt} e incluye una anotación
 posterior sobre la reconexión.
-\end{multicols}
 
 \begin{bloqueenlinea}
-  \begin{minipage}[t]{0.485\linewidth}
-    \vspace{0pt}\centering
-    \includegraphics[width=\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
-    \caption{Mensaje de control visible en Chrome con la laptop conectada.}
-    \label{fig:control}
-  \end{minipage}\hfill
-  \begin{minipage}[t]{0.485\linewidth}
-    \vspace{0pt}\centering
-    \includegraphics[width=\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
-    \caption{Inicio del corte con el indicador de red de Windows sin Internet.}
-  \end{minipage}
+  \includegraphics[width=\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
+  \caption{Mensaje de control visible en Chrome con la laptop conectada.}
+  \label{fig:control}
 \end{bloqueenlinea}
 
 \begin{bloqueenlinea}
-  \begin{minipage}[t]{0.485\linewidth}
-    \vspace{0pt}\centering
-    \includegraphics[width=\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
-    \caption{A las 00:09, Chrome aún muestra M0. El registro manual y el icono de Wi-Fi se conservan tal como aparecen en la captura.}
-  \end{minipage}\hfill
-  \begin{minipage}[t]{0.485\linewidth}
-    \vspace{0pt}\centering
-    \includegraphics[width=\linewidth]{../resultados/capturas/04-reconexion.png}
-    \caption{A las 00:19, los tres mensajes ya están visibles después de reconectar.}
-    \label{fig:reconexion}
-  \end{minipage}
+  \includegraphics[width=\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
+  \caption{Inicio del corte con el indicador de red de Windows sin Internet.}
 \end{bloqueenlinea}
 
-\begin{multicols}{2}
+\begin{bloqueenlinea}
+  \includegraphics[width=\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
+  \caption{A las 00:09, Chrome aún muestra M0. La captura conserva el registro manual y el icono de Wi-Fi.}
+\end{bloqueenlinea}
+
+\begin{bloqueenlinea}
+  \includegraphics[width=\linewidth]{../resultados/capturas/04-reconexion.png}
+  \caption{A las 00:19, los tres mensajes ya están visibles después de reconectar.}
+  \label{fig:reconexion}
+\end{bloqueenlinea}
+
 El resultado describe la recuperación del estado visible del cliente.
 La prueba interrumpió el acceso a la red de una laptop y mantuvo el
 teléfono conectado. Las réplicas del servicio quedaron fuera del
@@ -336,41 +325,45 @@ La comparación considera Discord como servicio administrado y Zulip
 como una instalación con servidor de aplicación y PostgreSQL
 separados, según la configuración documentada
 \cite{ingram2023messages,zulipArchitecture,zulipPostgresql}.
-\end{multicols}
 
 \begin{bloqueenlinea}[table]
 \caption{Comparación de la arquitectura y recuperación de mensajes en Discord y Zulip.}
 \smallskip
 \renewcommand{\arraystretch}{1.13}
-\begin{tabularx}{\linewidth}{|p{0.22\linewidth}|X|X|}
+\begin{tabularx}{\linewidth}{|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|}
 \hline
-\textbf{Criterio} & \textbf{Discord} & \textbf{Zulip} \\
+\textbf{Discord} & \textbf{Zulip} \\
 \hline
-Arquitectura & API, servicios de datos y ScyllaDB para el historial. &
+\multicolumn{2}{|l|}{\textbf{Arquitectura}} \\
+API, servicios de datos y ScyllaDB para el historial. &
 Django atiende solicitudes y Tornado entrega eventos. \\
 \hline
-Comunicación & API HTTP y eventos del Gateway por WebSocket. &
+\multicolumn{2}{|l|}{\textbf{Comunicación}} \\
+API HTTP y eventos del Gateway por WebSocket. &
 Solicitudes HTTP y espera prolongada mediante \textit{long polling}. \\
 \hline
-Transparencia de acceso & El cliente consulta mensajes por canal
+\multicolumn{2}{|l|}{\textbf{Transparencia de acceso}} \\
+El cliente consulta mensajes por canal
 mediante la API. & El usuario consulta canales y temas mediante la
 aplicación, que accede a la base. \\
 \hline
-Almacenamiento & Particiones de mensajes en el clúster documentado. &
+\multicolumn{2}{|l|}{\textbf{Almacenamiento}} \\
+Particiones de mensajes en el clúster documentado. &
 PostgreSQL guarda el mensaje y su relación con los destinatarios. \\
 \hline
-Consistencia y latencia & Lecturas por cuórum en el caso documentado de
+\multicolumn{2}{|l|}{\textbf{Consistencia y latencia}} \\
+Lecturas por cuórum en el caso documentado de
 autenticación. & Escritura transaccional en el servidor primario.
 La configuración de replicación condiciona la recuperación. \\
 \hline
-Recuperación & La API Gateway documenta reanudar sesiones para
+\multicolumn{2}{|l|}{\textbf{Recuperación}} \\
+La API Gateway documenta reanudar sesiones para
 aplicaciones. & El cliente confirma eventos mediante su último ID.
 Si la cola expira, obtiene el estado inicial de nuevo. \\
 \hline
 \end{tabularx}
 \end{bloqueenlinea}
 
-\begin{multicols}{2}
 Fuentes de la comparación
 \cite{ingram2023messages,discordGateway,smith2023authOutage,zulipArchitecture,zulipSendingMessages,zulipPostgresql,zulipEvents}.
 Zulip conserva los mensajes en PostgreSQL y usa una cola por cliente
@@ -424,45 +417,43 @@ La prueba de Discord permite concluir que el cliente se recuperó del
 corte observado. Para comparar las garantías de persistencia o la
 latencia de ambos sistemas harían falta pruebas con las mismas
 condiciones y control sobre el almacenamiento.
-\end{multicols}
 
-\section*{Declaración de uso de inteligencia artificial}
-\begin{multicols}{2}
-Utilicé OpenAI Codex (modelo GPT-6.1 Sol) para organizar el repositorio,
-estructurar y redactar partes del borrador, revisar los requisitos
-de la actividad y cotejar datos bibliográficos y DOI con las fichas
-editoriales. Codex también asistió en el piloto de Discord, preparó
-el borrador del mensaje de prueba en Zulip y tomó la captura después
-de que yo enviara el mensaje. En el Anexo B, Codex localizó los
-fragmentos y tomó las capturas de los PDF que yo resalté. La bitácora
-identifica los avances cuyos mensajes de commit redactó Codex.
-Para la figura de arquitectura, Codex preparó el archivo de draw.io
-a partir del bosquejo que dibujé y me ayudó a exportarlo.
-También ajustó la maquetación y comprobó la compilación del PDF.
+\section*{Declaración de uso de IA}
+Usé OpenAI Codex (modelo GPT-6.1 Sol) para estructurar, redactar y
+revisar partes del informe, revisar la consigna y cotejar referencias
+y DOI. Codex también digitalizó mi bosquejo en draw.io, ajustó la
+maquetación en LaTeX, compiló el PDF y organizó el repositorio. La
+bitácora registra los avances en los que redactó mensajes de commit.
 
-Verifiqué el resultado de la prueba principal al desconectar y
-reconectar mi laptop, enviar los mensajes desde el celular y comprobar
-en Chrome que reaparecieran en orden y sin recarga manual. Registré lo
-observado en la transcripción de PowerShell. Leí y marqué los pasajes
-de los tres artículos que se muestran en el Anexo B.
-Contrasté con Codex las referencias de Ferreira y de Bação y Guerreiro
-con los datos de Springer. Codex cotejó la referencia de Kokociński y
-colaboradores con la ficha de Elsevier y el PDF del artículo.
+Codex ejecutó el piloto asistido de Discord y preparó el mensaje de
+prueba de Zulip, que envié personalmente. También tomó la captura
+de Zulip y las del Anexo B a partir de los pasajes que marqué.
+
+Realicé la prueba principal en mi laptop y mi celular. Comprobé en
+Chrome el orden de los mensajes tras reconectar y registré lo observado
+en PowerShell. Leí y marqué los tres artículos del Anexo B. Contrasté
+con Codex las referencias de Ferreira y de Bação y Guerreiro en
+Springer. Codex cotejó la referencia de Kokociński y colaboradores
+con la ficha de Elsevier y el PDF del artículo.
 \end{multicols}
 
 \clearpage
+\begin{multicols}{2}
 \printbibliography
+\end{multicols}
 
 \clearpage
 \appendix
+\begin{multicols}{2}
 \section{Bosquejo inicial}
 \label{anexo:bosquejo}
 
 \begin{bloqueenlinea}
-  \includegraphics[width=0.91\linewidth]{../evidencias/bosquejo/arquitectura-discord.png}
+  \includegraphics[width=\linewidth]{../evidencias/bosquejo/arquitectura-discord.png}
   \caption{Bosquejo de la arquitectura de mensajes de Discord, dibujado a mano por Byron Daniel Loor Mendoza el 12 de noviembre de 2026.}
 \end{bloqueenlinea}
 
+\columnbreak
 \section{Lectura de fuentes}
 
 \begin{bloqueenlinea}
@@ -480,4 +471,5 @@ colaboradores con la ficha de Elsevier y el PDF del artículo.
   \caption{Kokociński et al. \cite{kokocinski2023correctness}, p. 11. Pérdida de una actualización confirmada tras el fallo de una réplica.}
 \end{bloqueenlinea}
 
+\end{multicols}
 \end{document}
