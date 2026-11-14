@@ -3,7 +3,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[spanish]{babel}
-\usepackage[margin=2.5cm]{geometry}
+\usepackage[margin=2.2cm]{geometry}
 \usepackage{graphicx}
 \usepackage{tabularx}
 \usepackage[backend=biber,style=ieee]{biblatex}
@@ -246,12 +246,7 @@ tiempo de recuperación quedó sin medir.
 
 Las figuras~\ref{fig:control} a~\ref{fig:reconexion} documentan
 el mensaje de control, el corte y el estado posterior a la reconexión.
-
-\begin{figuraenlinea}
-  \includegraphics[width=0.92\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
-  \caption{Mensaje de control visible en Chrome con la laptop conectada.}
-  \label{fig:control}
-\end{figuraenlinea}
+Las capturas originales están en \path{resultados/capturas/}.
 
 La laptop usó Chrome y el teléfono permaneció conectado con datos
 móviles. Los comandos \texttt{Get-Date}, \texttt{whoami} y
@@ -262,19 +257,31 @@ observaciones manuales. El procedimiento está en
 posterior sobre la reconexión.
 
 \begin{figuraenlinea}
-  \includegraphics[width=0.92\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
-  \caption{Inicio del corte con el indicador de red de Windows sin Internet.}
+  \begin{minipage}[t]{0.485\linewidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
+    \caption{Mensaje de control visible en Chrome con la laptop conectada.}
+    \label{fig:control}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.485\linewidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
+    \caption{Inicio del corte con el indicador de red de Windows sin Internet.}
+  \end{minipage}
 \end{figuraenlinea}
 
 \begin{figuraenlinea}
-  \includegraphics[width=0.92\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
-  \caption{Chrome aún muestra M0 a las 00:09. El registro manual y el icono de Wi-Fi se conservan como aparecen en la captura.}
-\end{figuraenlinea}
-
-\begin{figuraenlinea}
-  \includegraphics[width=0.92\linewidth]{../resultados/capturas/04-reconexion.png}
-  \caption{Estado capturado a las 00:19 con los tres mensajes visibles después de reconectar.}
-  \label{fig:reconexion}
+  \begin{minipage}[t]{0.485\linewidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
+    \caption{A las 00:09, Chrome aún muestra M0. El registro manual y el icono de Wi-Fi se conservan tal como aparecen en la captura.}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.485\linewidth}
+    \vspace{0pt}\centering
+    \includegraphics[width=\linewidth]{../resultados/capturas/04-reconexion.png}
+    \caption{A las 00:19, los tres mensajes ya están visibles después de reconectar.}
+    \label{fig:reconexion}
+  \end{minipage}
 \end{figuraenlinea}
 
 El resultado describe la recuperación del estado visible del cliente.
@@ -424,6 +431,7 @@ Contrasté con Codex las referencias de Ferreira y de Bação y Guerreiro
 con los datos de Springer. Codex cotejó la referencia de Kokociński y
 colaboradores con la ficha de Elsevier y el PDF del artículo.
 
+\clearpage
 \printbibliography
 
 \clearpage
