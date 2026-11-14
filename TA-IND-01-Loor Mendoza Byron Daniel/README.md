@@ -45,7 +45,6 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 - `informe/`: fuente LaTeX, bibliografía, revisión de fuentes y [borrador compilado](informe/TA-IND-01-Borrador-Discord-Zulip.pdf). El diagrama digital va en `informe/figuras/`.
 - `resultados/`: procedimiento, comandos, transcripción de PowerShell y observaciones. Las capturas originales están en `resultados/capturas/`.
 - `evidencias/`: [foto del bosquejo](evidencias/bosquejo/arquitectura-discord.png) y capturas anotadas de artículos en `lecturas/`.
-- `entrega/`: espacio para el PDF de una página destinado al SGA.
 - [Bitácora](BITACORA.md): registro por fecha de lo realizado, dificultades y tiempo de trabajo.
 
 ## Compilación y video
