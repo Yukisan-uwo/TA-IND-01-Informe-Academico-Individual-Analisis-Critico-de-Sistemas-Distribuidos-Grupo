@@ -20,8 +20,7 @@ Replicación, consistencia y disponibilidad de lectura\par
 \vfill
 Kevin Leonel García Bazurto\par
 Paralelo A\par
-13 de noviembre de 2026\par
-\href{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}{Repositorio en GitHub}
+13 de noviembre de 2026\par\resizebox{\linewidth}{!}{\href{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}{\nolinkurl{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}}}
 \end{titlepage}
 \begin{abstract}
 Este informe analiza cómo Apache Cassandra distribuye los datos y mantiene disponible una consulta cuando dejan de responder algunos nodos. El análisis describe el papel del coordinador, la replicación por centro de datos y los niveles de consistencia. Se realizó una prueba con Cassandra 5.0.9 en Docker, tres nodos y un factor de replicación de tres. Después de insertar un registro con ALL, se repitió la misma consulta con ONE y QUORUM mientras se detenían dos nodos de forma sucesiva. Con los tres nodos activos, ambos niveles devolvieron el registro. Con una única réplica disponible, ONE completó la lectura y QUORUM devolvió un error de disponibilidad porque requería dos respuestas. La comparación documental con CockroachDB examina la distribución de datos, la coordinación de lecturas, la replicación, los fallos y la recuperación. El resultado del laboratorio muestra que la disponibilidad depende del nivel de consistencia seleccionado y del estado de las réplicas de cada dato. La prueba se limita a lecturas de un registro previamente escrito y permite identificar qué condiciones habría que estudiar para evaluar escrituras, latencia o particiones de red.
@@ -34,7 +33,7 @@ Elegí Cassandra porque permite variar el nivel de consistencia de una operació
 \section{Arquitectura del sistema}
 La clave de partición se transforma en un token que permite localizar los nodos responsables del dato. En la tabla del laboratorio, \texttt{id} cumple esa función. La estrategia \texttt{NetworkTopologyStrategy} establece el número de réplicas por centro de datos. En \texttt{dc1}, el factor de tres coloca la partición del registro de prueba en los tres nodos disponibles \cite{cassandraDynamo}.
 
-El cliente \texttt{cqlsh} envía la consulta CQL a \texttt{taind-cas1}. Este nodo actúa como coordinador de la petición, localiza las réplicas y reúne las respuestas que exige el nivel seleccionado. También posee una réplica del registro. El papel de coordinador depende del nodo que recibe la petición. Los nodos intercambian información de pertenencia y actividad mediante \textit{gossip} \cite{cassandraDynamo}.
+El cliente \texttt{cqlsh} envía la consulta CQL a \texttt{taind-cas1}. Este nodo actúa como coordinador de la petición, localiza las réplicas y reúne las respuestas que exige el nivel seleccionado. También posee una réplica del registro. El papel de coordinador depende del nodo que recibe la petición. Los nodos intercambian información de pertenencia y actividad mediante \textit{gossip} \cite{cassandraDynamo}.En el bosquejo del Anexo~A representé la consulta, el coordinador y las réplicas. En la Figura~\ref{fig:arquitectura-cassandra} añadí la terminal de PowerShell en Windows, la red interna de Docker y los tres contenedores. También indiqué que, en esta práctica, ejecuté \texttt{cqlsh} dentro del contenedor del primer nodo.
 
 \evidencia{Evidencias/diagrama de arquitectura de Cassandra en Docker.drawio.png}{Arquitectura del clúster Cassandra utilizado en el experimento de lectura.}{fig:arquitectura-cassandra}
 
@@ -79,19 +78,22 @@ La prueba evaluó si Cassandra podía devolver el mismo registro con \texttt{ONE
 El registro con \texttt{id = 1} se insertó con \texttt{ALL}, que exigía la confirmación de las tres réplicas. Se mantuvo activo \texttt{taind-cas1} como coordinador de la consulta. Los comandos y las salidas se documentan en \path{Experimento/prueba-cassandra.md}.
 
 Con tres réplicas activas, ambas lecturas devolvieron el registro.
-\evidencia{Evidencias/02-lecturas-tres-replicas.png}{Lecturas con tres réplicas activas.}{fig:tres}
-
-Después de detener \texttt{taind-cas3}, repetí las lecturas con dos réplicas activas. La Figura~\ref{fig:dos} registra ese escenario.
-\evidencia{Evidencias/03-lecturas-dos-replicas.png}{Lecturas tras detener el tercer nodo.}{fig:dos}
-
-Al detener también \texttt{taind-cas2}, \texttt{ONE} devolvió el registro y \texttt{QUORUM} produjo un error \texttt{Unavailable}. La salida indicó dos réplicas requeridas y una disponible.
+\evidencia{Evidencias/02-lecturas-tres-replicas.png}{Lecturas con tres réplicas activas.}{fig:tres}En la prueba con dos réplicas activas, Docker Desktop muestra que \texttt{taind-cas2} estaba detenido y que \texttt{taind-cas1} y \texttt{taind-cas3} seguían activos. En ese escenario, tanto \texttt{ONE} como \texttt{QUORUM} devolvieron el registro (Figura~\ref{fig:dos}).
+\evidencia{Evidencias/03-lecturas-dos-replicas.png}{Lecturas con dos réplicas activas.}{fig:dos}En la prueba con una sola réplica activa, \texttt{ONE} devolvió el registro y \texttt{QUORUM} produjo un error \texttt{Unavailable}. La salida indicó dos réplicas requeridas y una disponible.
 \evidencia{Evidencias/04-lecturas-una-replica.png}{Resultado con una réplica activa.}{fig:una}
 
 \subsection{Interpretación}
 Con el coordinador activo y el registro escrito previamente en las tres réplicas, la lectura pudo continuar con \texttt{ONE}. La misma operación dejó de estar disponible con \texttt{QUORUM} al faltar una respuesta para alcanzar la mayoría. El error coincide con el umbral que documenta Cassandra \cite{cassandraDynamo}. La prueba permite comparar la disponibilidad de la lectura ante la pérdida de nodos en esta configuración.
 
-\section{Ejemplos del entorno del estudiante}
-% Añadir aquí las dos experiencias verificadas por Kevin, con observación y concepto.
+\section{Ejemplos del entorno del estudiante}\subsection{Entrega de una actividad en el SGA de la UTEQ}
+Cuando intenté subir una actividad, el SGA se quedó cargando. Al terminar la espera, la pantalla quedó como si yo no hubiera enviado nada. Volví a intentar la carga varias veces y seguí sin ver una confirmación. Cerré el SGA y, al abrirlo de nuevo, la actividad ya figuraba como cargada.
+
+Relaciono esta experiencia con el modelo cliente-servidor y la confirmación de una solicitud. La pantalla inicial me dejó sin saber si la entrega se había registrado. Al volver a consultar el estado desde una nueva sesión, pude ver la actividad. Desde mi lado quedó sin determinar cuál de los intentos se registró.
+
+\subsection{Transferencia en Banco Pichincha}
+Al hacer una transferencia en la aplicación de Banco Pichincha, recibí un mensaje de error. Lo intenté de nuevo y volvió a aparecer el error. En un intento posterior la aplicación mostró que la transferencia se había realizado. Al revisar el resultado, vi que se había registrado una sola vez.
+
+Este caso se relaciona con los reintentos y la idempotencia. Una solicitud idempotente puede repetirse sin producir un efecto adicional. En una transferencia, esto importa porque un mensaje de error puede dejar al usuario sin saber si la operación se registró. En mi caso observé una sola transferencia y, desde la aplicación, no pude determinar cómo se procesó cada intento.
 
 \section{Análisis comparativo}
 Cassandra y CockroachDB distribuyen datos y conservan copias para responder ante fallos. La comparación se centra en la lectura de datos replicados. Cassandra se evaluó en Docker y CockroachDB se analiza a partir de su documentación \cite{cassandraDynamo,cockroachRaft,cockroachReads}.
@@ -120,13 +122,13 @@ La consistencia ajustable es una fortaleza cuando la aplicación puede decidir q
 
 El diseño obliga a conocer los patrones de acceso. Una aplicación que concentra peticiones sobre pocas claves puede saturar las réplicas responsables, como documentó Discord \cite{discord2023}. En bases NoSQL distribuidas entre regiones, los niveles de consistencia pueden afectar el tiempo de respuesta y el rendimiento de las operaciones \cite{ferreira2024,ferreira_benchmarking_2025}. Para un sistema que deba comprobar en una misma transacción invariantes que abarcan múltiples registros, como evitar un cargo duplicado mientras se actualizan varios saldos, evaluaría primero una base SQL distribuida con garantías transaccionales adecuadas.
 
-\section{Conclusiones}
-Con tres réplicas activas, \texttt{ONE} y \texttt{QUORUM} devolvieron el mismo registro. Con una réplica activa, \texttt{ONE} conservó la disponibilidad de lectura. \texttt{QUORUM} devolvió un error que identificó el umbral requerido y las réplicas alcanzables. Por tanto, la cantidad de nodos que esta lectura puede perder depende del nivel elegido.
+\section{Conclusiones}Con tres y con dos réplicas activas, \texttt{ONE} y \texttt{QUORUM} devolvieron el mismo registro. Con una réplica activa, \texttt{ONE} conservó la disponibilidad de lectura. \texttt{QUORUM} devolvió un error que identificó el umbral requerido y las réplicas alcanzables. Por tanto, la cantidad de nodos que esta lectura puede perder depende del nivel elegido.
 
 La comparación con CockroachDB muestra que contar réplicas es insuficiente para describir la garantía de un sistema. También importa si la mayoría se usa para responder una lectura, para replicar un cambio acordado o para sostener la coordinación tras un fallo. Para extender el experimento sería necesario introducir escrituras durante la caída y observar las versiones leídas y la convergencia después de la recuperación.
 
-\section{Declaración de uso de inteligencia artificial}
-Se utilizó ChatGPT en modo Codex como apoyo para estructurar el informe, explicar comandos, localizar fuentes y preparar un borrador en LaTeX. El experimento en Docker y las capturas de ejecución fueron realizados por el estudiante. Los resultados del borrador se contrastaron con las salidas de terminal compartidas. La revisión del estudiante incluye cotejar las citas con las publicaciones originales y comprobar el PDF. El identificador exacto de versión del modelo debe consignarse si está disponible.
+\section{Declaración de uso de inteligencia artificial}Utilicé ChatGPT en modo Codex, con el modelo GPT-6.1 Sol, como apoyo para organizar el informe, mejorar la redacción de algunas secciones y revisar que las citas del texto correspondieran a las referencias. Durante la práctica, también lo consulté para entender los comandos de Docker y Cassandra y aclarar los mensajes de error de la terminal.
+
+Elaboré el informe a partir de la práctica que realicé en mi equipo. Configuré el clúster de tres nodos, ejecuté las consultas con \texttt{ONE} y \texttt{QUORUM} y tomé las capturas de los resultados. Para revisar el documento, contrasté la interpretación de la prueba con mis capturas y cotejé los datos de los artículos citados con sus publicaciones originales.
 
 \printbibliography[title={Referencias}]
 \clearpage
