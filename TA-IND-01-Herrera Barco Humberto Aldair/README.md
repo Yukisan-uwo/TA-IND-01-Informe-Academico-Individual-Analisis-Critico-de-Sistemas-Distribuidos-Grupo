@@ -47,12 +47,16 @@ Los detalles y evidencias se documentan en `experimento/resultados.md` y en las 
 
 El documento usa `pdflatex` + `biber` + `biblatex` (estilo IEEE).
 
-### Overleaf
+## Compilación del informe (PDFLaTeX)
 
-1. Subir `main.tex`, `referencias.bib` y la carpeta `figuras/` al proyecto (manteniendo las rutas relativas).
-2. En **Menu**: `Compiler = pdfLaTeX`, `TeX Live version = 2024/2025` (o reciente), `Main document = main.tex`.
-3. Presionar **Recompile** (Overleaf ejecuta automáticamente la secuencia necesaria para bibliografía).
-4. Descargar el PDF desde el visor.
+El documento se compila con **PDFLaTeX** y utiliza `biblatex` con `backend=biber` (estilo IEEE).
+
+```bash
+pdflatex main.tex
+biber main
+pdflatex main.tex
+pdflatex main.tex
+```
 
 ### Compilación local
 
