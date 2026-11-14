@@ -48,24 +48,6 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 - `entrega/`: espacio para el PDF de una página destinado al SGA.
 - [Bitácora](BITACORA.md): registro por fecha de lo realizado, dificultades y tiempo de trabajo.
 
-## Control de la consigna
-
-- [ ] Confirmar la entrega de FORM-FB-01 y FORM-AC-01, y el registro de Discord en el foro.
-- [x] Completar la carátula con facultad, nivel, paralelo y fecha.
-- [x] Comprobar la extensión del informe. El resumen tiene 181 palabras y el cuerpo ocupa cinco páginas, de la 2 a la 6 del PDF. Las referencias empiezan al final de la página 6.
-- [ ] Revisar personalmente introducción, arquitectura, siete transparencias, CAP y PACELC, comunicación, tolerancia a fallos, tabla de comparación, postura crítica y conclusiones.
-- [x] Ejecutar una prueba propia y conservar cuatro capturas originales de la laptop y la [transcripción de PowerShell](resultados/sesion-20261112-233908.txt).
-- [x] Incorporar dos ejemplos de uso y relacionarlos con conceptos de la unidad. El aviso de reconexión de Discord ilustra la transparencia a fallos y la demo de Zulip ilustra la transparencia de acceso.
-- [x] Incluir la foto original del bosquejo en el Anexo A.
-- [x] Incorporar el diagrama digital elaborado a partir del bosquejo.
-- [x] Incorporar al Anexo B las tres capturas de los fragmentos resaltados por Byron, con página y cita.
-- [x] Cotejar los datos de los tres artículos citados. Byron revisó las dos referencias de Springer con Codex. Codex verificó la referencia de Elsevier.
-- [ ] Completar la bitácora con tiempos reales y registrar ocho commits de trabajo con mensajes propios en al menos tres días. Los mensajes redactados por Codex están declarados en la bitácora.
-- [x] Registrar el apoyo de IA y el alcance del cotejo bibliográfico en la declaración del informe.
-- [ ] Grabar de tres a cinco minutos con rostro y voz. Explicar sin leer una captura y la conclusión. Poner el enlace del video en el README y comprobar el acceso.
-- [ ] Preparar la defensa oral del método, resultado, límites y cambios posibles.
-- [ ] Compilar desde una copia limpia, guardar el PDF del informe en GitHub, comprobar que el repositorio sea público y entregar al SGA el PDF de una página con la URL completa en una sola línea.
-
 ## Compilación y video
 
 El informe está en [main.tex](informe/main.tex). Requiere pdfLaTeX, Biber, Latin Modern, babel con español, geometry, graphicx, multicol, tabularx, xurl, hyperref, biblatex y el estilo biblatex-ieee. En Windows se usa MiKTeX 25.12 con Biber 2.21. Desde `informe/`, ejecutar:
@@ -77,11 +59,7 @@ pdflatex -halt-on-error main.tex
 pdflatex -halt-on-error main.tex
 ```
 
-El enlace al video se añadirá aquí cuando esté disponible.
-
-## Entrega
-
-El trabajo individual se guarda en esta carpeta del repositorio compartido. Al SGA se entrega únicamente un PDF de una página con identificación y la URL completa del repositorio en una sola línea. El cierre es el 15 de noviembre de 2026 a las 23:55, hora de Ecuador.
+Video: https://youtu.be/9oh-vx_YFw8
 
 ## Apoyo de IA registrado
 
