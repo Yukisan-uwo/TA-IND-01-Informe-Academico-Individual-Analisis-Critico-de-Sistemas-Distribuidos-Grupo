@@ -1,8 +1,4 @@
 % TA-IND-01 - Informe individual. Versión integrada, 13 nov 2026.
-% COMPILAR desde la carpeta informe/: pdflatex main.tex; biber main; pdflatex main.tex; pdflatex main.tex
-% ANTES DE ENTREGAR: comprobar que el URL funcione, y que el diagrama
-% de elaboración propia y la fotografía ORIGINAL del boceto en ../diagramas/.
-% IMPORTANTE: Las capturas corregidas por el estudiante en GitHub son las versiones definitivas.
 \documentclass[12pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -29,8 +25,6 @@
 \pagestyle{fancy}\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}
 \renewcommand{\arraystretch}{1.13}
 \captionsetup{font=small,labelfont=bf}
-% Comprobacion estricta: no se permite generar el PDF final con figuras ausentes.
-% Para pruebas temporales cambiar solo en una COPIA a \revisionborradortrue.
 \newif\ifrevisionborrador
 \revisionborradorfalse
 \newcommand{\figoriginal}[2]{%
@@ -60,7 +54,7 @@
 {\LARGE\bfseries Análisis crítico de RabbitMQ como sistema distribuido de mensajería y comparación con Apache Kafka\par}
 \vspace{2cm}
 {\large Estudiante: Luis Mario Zambrano Párraga\par}
-{\large Paralelo: \textbf{Séptimo A}\par}
+{\large Paralelo: \textbf{A}\par}
 {\large Fecha: 13 de noviembre de 2026\par}
 \vfill
 {\small\bfseries Repositorio público del grupo GHLZ:\par}
@@ -94,7 +88,7 @@ La configuración incluyó tres brokers llamados \texttt{rabbit1}, \texttt{rabbi
 
 \begin{figure}[H]
 \centering
-\figoriginal{../diagramas/arquitectura-rabbitmq.png}{0.32\textheight}
+\figoriginal{../diagramas/arquitectura-rabbitmq.drawio.png}{0.32\textheight}
 \caption{Arquitectura del laboratorio con los tres brokers, la cola de quórum y los clientes Python; diagrama editable elaborado en draw.io a partir del bosquejo manuscrito.}
 \label{fig:arquitectura}
 \end{figure}
@@ -131,7 +125,7 @@ CAP estudia el compromiso entre consistencia y disponibilidad cuando existe una 
 
 La unidad analizada aquí es la \emph{cola de quórum}, no todo RabbitMQ. La documentación oficial indica que estas colas privilegian la consistencia de los datos confirmados: para operar necesitan una mayoría de sus miembros y no consideran seguros los mensajes que el broker aún no confirmó al productor \cite{RabbitMQQuorum2026}. En el experimento realizado, al detener dos de tres nodos, el miembro restante quedó en estado \texttt{pre\_vote} y no se observó un líder operativo. Esto concuerda con la dependencia del quórum, aunque debemos dejar claro que los nodos fueron detenidos deliberadamente: \textbf{no se simuló una partición de red}.
 
-Con respecto a PACELC, las confirmaciones de publicación y la replicación entre varias réplicas implican coordinación adicional. En términos de diseño se privilegia la seguridad de los datos frente a la mínima latencia en ciertas operaciones. Sin embargo, no registramos tiempos de respuesta comparables, por lo que no asignamos una clasificación PACELC global ni afirmamos cuánto tarda cada operación en RabbitMQ. Esta conclusión es cualitativa y está apoyada en la documentación, no en una medición propia \cite{RabbitMQQuorum2026,Ahmed2023}.
+Con respecto a PACELC, las confirmaciones de publicación y la replicación entre varias réplicas implican coordinación adicional. En términos de diseño se privilegia la seguridad de los datos frente a la mínima latencia en ciertas operaciones. Sin embargo, no registramos tiempos de respuesta comparables, por lo que no asignamos una clasificación PACELC global ni afirmamos cuánto tarda cada operación en RabbitMQ. Esta conclusión es cualitativa y está apoyada en la documentación, no en una medición propia \cite{RabbitMQQuorum2026, Ahmed2023}.
 
 \subsection{Modelos de comunicación}
 El intercambio observado se puede describir como un esquema \emph{productor--broker--consumidor}. El cliente se conecta a un broker mediante una relación cliente-servidor, pero el clúster funciona mediante comunicación entre nodos. No es una red en la que los clientes Python envíen mensajes directamente entre sí. El efecto práctico es un sistema híbrido: acceso cliente-servidor hacia el broker y coordinación distribuida en el interior de la cola replicada.
@@ -239,14 +233,14 @@ El segundo resultado es el alcance concreto de la tolerancia a fallos de la cola
 Finalmente, la replicación por consenso ayuda a conservar mensajes, pero no elimina el costo de coordinar réplicas ni resuelve automáticamente la recuperación de conexiones del cliente. La elección entre RabbitMQ y Kafka debe basarse en la necesidad de enrutamiento, retención, reprocesamiento y rendimiento, no en una clasificación general de mejor o peor. Para ampliar este estudio harían falta pruebas de latencia, particiones de red y procesos concurrentes, además de un despliegue sobre máquinas físicas independientes.
 
 \section*{Declaración de uso de inteligencia artificial}
-Para preparar esta actividad utilicé ChatGPT de OpenAI (GPT-6) como apoyo en la organización de los pasos, la elaboración y corrección de scripts de Python, la búsqueda y verificación de publicaciones, la interpretación de material en inglés y la revisión de la redacción y del código LaTeX. Contrasté los comandos con las salidas de mi entorno Docker y las afirmaciones bibliográficas con los artículos y sus DOI. Las capturas experimentales y de lectura provienen de mi trabajo con la terminal, RabbitMQ y los PDF consultados. La asistencia de IA no sustituyó la ejecución de las pruebas ni las capturas originales. Las conclusiones distinguen lo observado en mi laboratorio de lo que indican las publicaciones consultadas.
+Para preparar esta actividad utilicé ChatGPT de OpenAI (GPT-6) como apoyo en la organización de los pasos, la elaboración y corrección de scripts de Python, la interpretación de material en inglés y la revisión de la redacción y del código LaTeX. Contrasté los comandos con las salidas de mi entorno Docker. Me ayudo tambien con los comandos para los .md
 
 \printbibliography[title={Referencias}]
 \clearpage
 \appendix
 \section*{Anexo A. Bosquejo manuscrito de arquitectura}
 \begin{figure}[H]\centering
-\figoriginal{../diagramas/boceto-inicial.jpg}{0.63\textheight}
+\figoriginal{../diagramas/boceto-inicial.jpeg}{0.63\textheight}
 \caption{Bosquejo inicial de la arquitectura elaborado a mano, con nombre y fecha visibles en la fotografía original.}
 \end{figure}
 
@@ -257,7 +251,7 @@ Para preparar esta actividad utilicé ChatGPT de OpenAI (GPT-6) como apoyo en la
 \end{landscape}
 \evidencialectura{02-maharjan-p301-arquitectura.png}{Maharjan et al. (2023), página 301}{Exchanges, colas y bindings \cite{Maharjan2023}}
 \evidencialectura{03-pacella-p10-comparacion.png}{Pacella et al. (2025), página 10 del PDF}{Rendimiento comparativo \cite{Pacella2025}}
-\evidencialectura{04-ahmed-cap.png}{Ahmed et al. (2023), sección 1.1}{CAP \cite{Ahmed2023}}
+\evidencialectura{04-ahmed-p172-cap.png}{Ahmed et al. (2023), sección 1.1}{CAP \cite{Ahmed2023}}
 \evidencialectura{05-ahmed-pacelc.png}{Ahmed et al. (2023), sección 1.2}{PACELC \cite{Ahmed2023}}
 \evidencialectura{06-zhang-p1828-raft.png}{Zhang et al. (2024), página 1828}{Raft, líder y mayoría \cite{Zhang2024FlexRaft}}
 \evidencialectura{07-chalabi-transparencias.png}{Chalabi y Slimani (2026), introducción}{Transparencias de distribución \cite{Chalabi2026}}
