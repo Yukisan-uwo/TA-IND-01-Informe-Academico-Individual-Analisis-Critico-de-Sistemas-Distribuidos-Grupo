@@ -24,7 +24,7 @@ Con una sola réplica activa, `ONE` devolvió el registro. La lectura con `QUORU
 Organicé las cuatro capturas en [Evidencias](./Evidencias/) y documenté los comandos y resultados en [prueba-cassandra.md](./Experimento/prueba-cassandra.md).
 ## 13 de noviembre de 2026 — Diagrama, lectura y sustentación
 
-**Tiempo dedicado:** [indica el tiempo aproximado que realmente dedicaste].
+**Tiempo dedicado:** 3 horas dedicadas incluso en la elaboración final del informe.
 
 Pasé mi bosquejo a Draw.io para mostrar cómo estaban conectados los tres nodos de Cassandra en Docker. Revisé tres artículos, marqué los
 fragmentos que usé en el informe y preparé las capturas para el Anexo B.
