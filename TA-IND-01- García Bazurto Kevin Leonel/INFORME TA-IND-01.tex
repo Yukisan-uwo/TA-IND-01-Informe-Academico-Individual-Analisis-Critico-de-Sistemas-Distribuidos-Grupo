@@ -36,7 +36,7 @@ La clave de partición se transforma en un token que permite localizar los nodos
 
 El cliente \texttt{cqlsh} envía la consulta CQL a \texttt{taind-cas1}. Este nodo actúa como coordinador de la petición, localiza las réplicas y reúne las respuestas que exige el nivel seleccionado. También posee una réplica del registro. El papel de coordinador depende del nodo que recibe la petición. Los nodos intercambian información de pertenencia y actividad mediante \textit{gossip} \cite{cassandraDynamo}.
 
-\evidencia{Evidencias/cassandra-docker.png}{Arquitectura del clúster Cassandra utilizado en el experimento de lectura.}{fig:arquitectura-cassandra}
+\evidencia{Evidencias/diagrama de arquitectura de Cassandra en Docker.drawio.png}{Arquitectura del clúster Cassandra utilizado en el experimento de lectura.}{fig:arquitectura-cassandra}
 
 \section{Análisis con los conceptos de la Unidad 1}
 \subsection{Transparencias de distribución}
