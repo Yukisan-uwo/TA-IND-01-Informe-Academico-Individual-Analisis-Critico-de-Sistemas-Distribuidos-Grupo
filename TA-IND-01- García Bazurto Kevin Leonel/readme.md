@@ -41,6 +41,16 @@ de consistencia.
 - [Esquema inicial dibujado a mano](./esquema-inicial.jpeg)
 - [Bitácora de trabajo](./BITACORA.md)
 
+## Cómo compilar el informe en Overleaf
+
+El PDF compilado está incluido en esta carpeta. Sigue estos pasos si necesitas regenerarlo a partir del código LaTeX.
+
+1. Descarga los archivos `INFORME TA-IND-01.tex`, `referencias.bib` y `esquema-inicial.jpeg`, junto con la carpeta `Evidencias/`.
+2. Coloca los tres archivos en el mismo nivel que `Evidencias/`. Conserva los nombres y las rutas de las imágenes.
+3. Comprime esos archivos y la carpeta `Evidencias/` en un `.zip`. En Overleaf, selecciona **New Project → Upload Project** y carga el archivo.
+4. En la configuración del proyecto, selecciona `INFORME TA-IND-01.tex` como **Main document** y **pdfLaTeX** como compilador. Si usas el proyecto original de Overleaf, el documento principal se llama `main.tex`.
+5. Pulsa **Recompile**. Comprueba en la vista previa que se vean las imágenes y que aparezca la bibliografía.
+6. Pulsa **Download PDF**, junto a **Recompile**, para guardar el informe generado.
 ## Observación sobre el historial de commits
 
 El historial de mi trabajo registra commits en dos días, el 12 y el 13 de
