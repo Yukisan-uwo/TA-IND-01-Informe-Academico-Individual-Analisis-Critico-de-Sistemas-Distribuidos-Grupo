@@ -68,7 +68,7 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 
 ## Compilación y video
 
-El informe está en [main.tex](informe/main.tex). Requiere pdfLaTeX, Biber, Latin Modern, babel con español, geometry, graphicx, tabularx, xurl, hyperref, biblatex y el estilo biblatex-ieee. En Windows se usa MiKTeX 25.12 con Biber 2.21. Desde `informe/`, ejecutar:
+El informe está en [main.tex](informe/main.tex). Requiere pdfLaTeX, Biber, Latin Modern, babel con español, geometry, graphicx, multicol, tabularx, xurl, hyperref, biblatex y el estilo biblatex-ieee. En Windows se usa MiKTeX 25.12 con Biber 2.21. Desde `informe/`, ejecutar:
 
 ```text
 pdflatex -halt-on-error main.tex

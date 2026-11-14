@@ -5,6 +5,7 @@
 \usepackage[spanish]{babel}
 \usepackage[margin=2.2cm]{geometry}
 \usepackage{graphicx}
+\usepackage{multicol}
 \usepackage{tabularx}
 \usepackage[backend=biber,style=ieee]{biblatex}
 \usepackage{xurl}
@@ -26,6 +27,9 @@
 \setlength{\intextsep}{11pt plus 3pt minus 3pt}
 \setlength{\floatsep}{11pt plus 3pt minus 3pt}
 \setlength{\abovecaptionskip}{5pt}
+\setlength{\columnsep}{18pt}
+\raggedcolumns
+\setlength{\emergencystretch}{1.5em}
 \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
 \setcounter{topnumber}{3}
 \setcounter{totalnumber}{4}
@@ -34,9 +38,9 @@
 \renewcommand{\floatpagefraction}{0.75}
 
 \makeatletter
-\newenvironment{figuraenlinea}{%
+\newenvironment{bloqueenlinea}[1][figure]{%
   \par\addvspace{\intextsep}\noindent
-  \begin{minipage}{\linewidth}\centering\small\def\@captype{figure}%
+  \begin{minipage}{\linewidth}\centering\small\def\@captype{#1}%
 }{%
   \end{minipage}\par\addvspace{\intextsep}%
 }
@@ -108,6 +112,7 @@ el análisis de garantías internas depende de la operación y de la
 configuración documentadas.
 \end{abstract}
 
+\begin{multicols}{2}
 \section{Introducción}
 La pregunta del informe es qué compromisos entre latencia, consistencia y
 recuperación ante fallos se observan en la entrega y el almacenamiento de
@@ -128,6 +133,7 @@ situaciones cotidianas y estudiar aspectos que antes pasaba por alto,
 como qué ocurre con los mensajes cuando pierdo la conexión y vuelvo a
 conectarme.
 
+\columnbreak
 \section{Arquitectura}
 La API HTTP permite solicitar el historial y crear mensajes. La
 arquitectura publicada por Discord ubica servicios de datos entre la API
@@ -146,14 +152,17 @@ secuencia \cite{discordGateway}.
 La figura~\ref{fig:arquitectura-discord} digitaliza el bosquejo del
 Anexo~\ref{anexo:bosquejo}. La línea punteada indica la relación
 conceptual entre crear un mensaje y generar un evento para el cliente.
+\end{multicols}
 
-\begin{figuraenlinea}
-  \includegraphics[width=0.82\linewidth]{figuras/arquitectura-discord.pdf}
+\begin{bloqueenlinea}
+  \includegraphics[width=0.90\linewidth]{figuras/arquitectura-discord.pdf}
   \caption{Flujos de solicitud, almacenamiento y entrega de eventos en Discord.}
   \label{fig:arquitectura-discord}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
+\clearpage
 \section{Conceptos de sistemas distribuidos}
+\begin{multicols}{2}
 \subsection{Transparencias}
 \begin{description}
   \item[Acceso.] Desde el cliente se consulta un canal a través de la
@@ -227,7 +236,10 @@ de actualización \cite{smith2023authOutage}. La replicación ayuda a
 tolerar la pérdida de una zona, pero la capacidad de las restantes
 también condiciona el servicio. Los reintentos pueden agravar la
 sobrecarga cuando muchas solicitudes fallan a la vez.
+\end{multicols}
 
+\clearpage
+\begin{multicols}{2}
 \section{Experimento}
 \subsection{Piloto asistido}
 El 12 de noviembre de 2026, Codex operó dos clientes web en una PC.
@@ -256,8 +268,9 @@ observaciones manuales. El procedimiento está en
 \texttt{resultados/EXPERIMENTO.md}. La transcripción original está en
 \path{resultados/sesion-20261112-233908.txt} e incluye una anotación
 posterior sobre la reconexión.
+\end{multicols}
 
-\begin{figuraenlinea}
+\begin{bloqueenlinea}
   \begin{minipage}[t]{0.485\linewidth}
     \vspace{0pt}\centering
     \includegraphics[width=\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
@@ -269,9 +282,9 @@ posterior sobre la reconexión.
     \includegraphics[width=\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
     \caption{Inicio del corte con el indicador de red de Windows sin Internet.}
   \end{minipage}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
-\begin{figuraenlinea}
+\begin{bloqueenlinea}
   \begin{minipage}[t]{0.485\linewidth}
     \vspace{0pt}\centering
     \includegraphics[width=\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
@@ -283,15 +296,19 @@ posterior sobre la reconexión.
     \caption{A las 00:19, los tres mensajes ya están visibles después de reconectar.}
     \label{fig:reconexion}
   \end{minipage}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
+\begin{multicols}{2}
 El resultado describe la recuperación del estado visible del cliente.
 La prueba interrumpió el acceso a la red de una laptop y mantuvo el
 teléfono conectado. Las réplicas del servicio quedaron fuera del
 control experimental. Por eso, la observación no permite clasificar
 Discord según CAP ni identificar si el cliente reanudó una sesión del
 Gateway o consultó el historial.
+\end{multicols}
 
+\clearpage
+\begin{multicols}{2}
 \section{Ejemplos del entorno}
 \paragraph{Discord y el aviso de reconexión.}
 Cuando se corta mi conexión, he visto el aviso «Reconectando» en la zona
@@ -300,10 +317,7 @@ de estado. Esto ilustra una transparencia a fallos parcial: el cliente
 puede gestionar la reconexión y, al mismo tiempo, hacer visible la
 interrupción al usuario.
 
-\par\addvspace{\intextsep}\noindent
-\begin{minipage}[t]{0.63\linewidth}
-\vspace{0pt}
-\textbf{Zulip y el historial por temas.}\enspace
+\paragraph{Zulip y el historial por temas.}
 En la demo de Zulip, Byron envió \texttt{ZULIP-M1} al tema
 \textit{Prueba TA-IND-01} del canal \texttt{\#general}. Con apoyo de
 Codex se abrió el tema \textit{saludos} y luego se volvió a
@@ -311,25 +325,22 @@ Codex se abrió el tema \textit{saludos} y luego se volvió a
 ilustra la transparencia de acceso: el usuario consulta el historial
 por canal y tema desde la interfaz, que se encarga de obtener los datos.
 La figura~\ref{fig:zulip-tema} muestra el resultado de la comprobación.
-\end{minipage}\hfill
-\begin{minipage}[t]{0.33\linewidth}
-\vspace{0pt}
-\begin{figuraenlinea}
-  \includegraphics[width=\linewidth,height=0.25\textheight,keepaspectratio]{../resultados/capturas/zulip-tema-prueba.jpg}
+\begin{bloqueenlinea}
+  \includegraphics[width=\linewidth,height=0.19\textheight,keepaspectratio]{../resultados/capturas/zulip-tema-prueba.jpg}
   \caption{Vista del mensaje al volver a abrir el tema de prueba en Zulip.}
   \label{fig:zulip-tema}
-\end{figuraenlinea}
-\end{minipage}\par
+\end{bloqueenlinea}
 
 \section{Comparación con Zulip}
 La comparación considera Discord como servicio administrado y Zulip
 como una instalación con servidor de aplicación y PostgreSQL
 separados, según la configuración documentada
 \cite{ingram2023messages,zulipArchitecture,zulipPostgresql}.
+\end{multicols}
 
-\begin{table}[!htbp]
+\begin{bloqueenlinea}[table]
 \caption{Comparación de la arquitectura y recuperación de mensajes en Discord y Zulip.}
-\centering\small
+\smallskip
 \renewcommand{\arraystretch}{1.13}
 \begin{tabularx}{\linewidth}{|p{0.22\linewidth}|X|X|}
 \hline
@@ -357,8 +368,9 @@ aplicaciones. & El cliente confirma eventos mediante su último ID.
 Si la cola expira, obtiene el estado inicial de nuevo. \\
 \hline
 \end{tabularx}
-\end{table}
+\end{bloqueenlinea}
 
+\begin{multicols}{2}
 Fuentes de la comparación
 \cite{ingram2023messages,discordGateway,smith2023authOutage,zulipArchitecture,zulipSendingMessages,zulipPostgresql,zulipEvents}.
 Zulip conserva los mensajes en PostgreSQL y usa una cola por cliente
@@ -374,7 +386,10 @@ La demo permitió observar la organización del historial por temas en
 Zulip. La prueba de Discord observó la recuperación del historial
 visible tras un corte de conexión. La comparación de los mecanismos
 internos se apoya en la documentación técnica de cada plataforma.
+\end{multicols}
 
+\clearpage
+\begin{multicols}{2}
 \section{Postura crítica}
 El diseño de Discord reduce la presión sobre el almacenamiento cuando
 muchos usuarios consultan los mismos mensajes. Reunir esas consultas
@@ -409,8 +424,10 @@ La prueba de Discord permite concluir que el cliente se recuperó del
 corte observado. Para comparar las garantías de persistencia o la
 latencia de ambos sistemas harían falta pruebas con las mismas
 condiciones y control sobre el almacenamiento.
+\end{multicols}
 
 \section*{Declaración de uso de inteligencia artificial}
+\begin{multicols}{2}
 Utilicé OpenAI Codex (modelo GPT-6.1 Sol) para organizar el repositorio,
 estructurar y redactar partes del borrador, revisar los requisitos
 de la actividad y cotejar datos bibliográficos y DOI con las fichas
@@ -431,6 +448,7 @@ de los tres artículos que se muestran en el Anexo B.
 Contrasté con Codex las referencias de Ferreira y de Bação y Guerreiro
 con los datos de Springer. Codex cotejó la referencia de Kokociński y
 colaboradores con la ficha de Elsevier y el PDF del artículo.
+\end{multicols}
 
 \clearpage
 \printbibliography
@@ -440,26 +458,26 @@ colaboradores con la ficha de Elsevier y el PDF del artículo.
 \section{Bosquejo inicial}
 \label{anexo:bosquejo}
 
-\begin{figuraenlinea}
+\begin{bloqueenlinea}
   \includegraphics[width=0.91\linewidth]{../evidencias/bosquejo/arquitectura-discord.png}
   \caption{Bosquejo de la arquitectura de mensajes de Discord, dibujado a mano por Byron Daniel Loor Mendoza el 12 de noviembre de 2026.}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
 \section{Lectura de fuentes}
 
-\begin{figuraenlinea}
+\begin{bloqueenlinea}
   \includegraphics[width=0.97\linewidth]{../evidencias/lecturas/01-ferreira-consistencia.jpg}
   \caption{Ferreira et al. \cite{ferreira2024consistency}, p. 14. Efecto de la consistencia fuerte sobre el rendimiento y el tiempo de respuesta en operaciones de escritura.}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
-\begin{figuraenlinea}
+\begin{bloqueenlinea}
   \includegraphics[width=0.97\linewidth]{../evidencias/lecturas/02-bacao-eventos.jpg}
   \caption{Bação y Guerreiro \cite{bacao2026consistency}, p. 4. Publicación y suscripción a eventos en la comunicación asíncrona.}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
-\begin{figuraenlinea}
+\begin{bloqueenlinea}
   \includegraphics[width=0.97\linewidth]{../evidencias/lecturas/03-kokocinski-fallos.jpg}
   \caption{Kokociński et al. \cite{kokocinski2023correctness}, p. 11. Pérdida de una actualización confirmada tras el fallo de una réplica.}
-\end{figuraenlinea}
+\end{bloqueenlinea}
 
 \end{document}
