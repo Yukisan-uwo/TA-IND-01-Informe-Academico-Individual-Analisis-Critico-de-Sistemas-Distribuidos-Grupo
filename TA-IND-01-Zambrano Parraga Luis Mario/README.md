@@ -59,14 +59,19 @@ Las pruebas permitieron estudiar el comportamiento de la mensajería replicada a
 
 ## 6. Informe académico
 
-El informe se desarrollará en LaTeX e incluirá:
-
-- Arquitectura y transparencias de distribución.
+El informe se encuentra en la carpeta informe/ y está elaborado en LaTeX. Incluye:
+- Arquitectura de RabbitMQ y funcionamiento de sus componentes.
+- Transparencias de distribución.
 - Análisis de CAP y PACELC.
-- Modelos de comunicación y tolerancia a fallos.
-- Interpretación de los experimentos realizados.
+- Modelos de comunicación.
+- Tolerancia a fallos y recuperación mediante colas de quórum.
+- Un incidente real documentado relacionado con la disponibilidad.
+- Experimentación propia y análisis de resultados.
+- Ejemplos relacionados con el entorno universitario.
 - Comparación crítica entre RabbitMQ y Apache Kafka.
-- Conclusiones sustentadas en resultados y bibliografía.
+- Conclusiones y declaración de uso de inteligencia artificial.
+- Referencias bibliográficas y anexos con evidencias de lectura y del trabajo experimental.
+El archivo referencias.bib contiene las fuentes utilizadas por el documento. La bibliografía se procesa mediante biblatex, con estilo IEEE y backend Biber.
 
 ### Compilación
 
@@ -78,8 +83,6 @@ La secuencia de compilación prevista es:
 pdflatex → biber → pdflatex → pdflatex
 ```
 
-**Pendiente de completar:** nombre y ruta del archivo principal, comandos exactos, dependencias de LaTeX y comprobación de que el PDF se regenera correctamente desde el repositorio.
-
 ## 7. Evidencias de autoría
 
 Se conservan capturas originales de la ejecución de RabbitMQ, archivos de configuración, programas Python y resultados de las pruebas.
@@ -90,12 +93,15 @@ Las capturas de lectura científica, el diagrama definitivo y los demás anexos 
 
 ## 8. Sustentación
 
-**Video de sustentación:** pendiente de incorporación.
+**Video de sustentación:** https://youtu.be/QhIJK3b6n10 
 
-El enlace al video de 3 a 5 minutos se publicará en este apartado una vez completada la grabación.
+## 9. Limitaciones del trabajo
+- Los tres nodos RabbitMQ se ejecutaron en contenedores sobre una misma computadora.
+- No se realizó una partición de red real.
+- No se midieron latencias ni tiempos de elección de líder.
+- Apache Kafka no se ejecutó en el laboratorio; su comparación se basa en publicaciones científicas consultadas.
+- Los resultados experimentales corresponden a las condiciones concretas del entorno utilizado y no deben generalizarse a todos los despliegues.
+## 10. Estado del trabajo
+Se desarrollaron el informe académico, la experimentación con RabbitMQ, el diagrama de arquitectura, las evidencias de lectura y experimentación, y el video de sustentación.
 
-## 9. Estado del proyecto
-
-**Completado:** preparación del entorno, formación del clúster y pruebas de mensajería, replicación, caída del líder, pérdida de mayoría y recuperación.
-
-**Pendiente:** revisión bibliográfica, análisis crítico comparativo, diagrama definitivo, informe LaTeX, capturas de lectura y video de sustentación.
+El repositorio conserva los archivos fuente, las referencias bibliográficas, el PDF generado y los materiales necesarios para consultar el procedimiento realizado.
