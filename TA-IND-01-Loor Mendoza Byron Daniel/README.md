@@ -52,7 +52,7 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 
 - [ ] Confirmar la entrega de FORM-FB-01 y FORM-AC-01, y el registro de Discord en el foro.
 - [x] Completar la carátula con facultad, nivel, paralelo y fecha.
-- [x] Comprobar la extensión del borrador. El resumen tiene 181 palabras y hay ocho páginas de contenido, sin contar carátula, referencias ni anexos.
+- [x] Comprobar la extensión del informe. El resumen tiene 181 palabras y el cuerpo supera el mínimo de cinco páginas.
 - [ ] Revisar personalmente introducción, arquitectura, siete transparencias, CAP y PACELC, comunicación, tolerancia a fallos, tabla de comparación, postura crítica y conclusiones.
 - [x] Ejecutar una prueba propia y conservar cuatro capturas originales de la laptop y la [transcripción de PowerShell](resultados/sesion-20261112-233908.txt).
 - [x] Incorporar dos ejemplos de uso y relacionarlos con conceptos de la unidad. El aviso de reconexión de Discord ilustra la transparencia a fallos y la demo de Zulip ilustra la transparencia de acceso.
@@ -68,7 +68,7 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 
 ## Compilación y video
 
-El borrador está en [main.tex](informe/main.tex). Requiere pdfLaTeX, Biber, babel con español, geometry, graphicx, tabularx, xurl, hyperref, biblatex y el estilo biblatex-ieee. En Windows se usa MiKTeX 25.12 con Biber 2.21. Desde `informe/`, ejecutar:
+El informe está en [main.tex](informe/main.tex). Requiere pdfLaTeX, Biber, Latin Modern, babel con español, geometry, graphicx, tabularx, xurl, hyperref, biblatex y el estilo biblatex-ieee. En Windows se usa MiKTeX 25.12 con Biber 2.21. Desde `informe/`, ejecutar:
 
 ```text
 pdflatex -halt-on-error main.tex

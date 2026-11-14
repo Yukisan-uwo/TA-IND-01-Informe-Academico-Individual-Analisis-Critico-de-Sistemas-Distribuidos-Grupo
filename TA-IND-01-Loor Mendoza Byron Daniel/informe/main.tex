@@ -1,6 +1,7 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[10pt,a4paper]{article}
 \pdfminorversion=7
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage[spanish]{babel}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
@@ -10,13 +11,42 @@
 \usepackage[hidelinks]{hyperref}
 \addbibresource{referencias.bib}
 \DefineBibliographyStrings{spanish}{artno = {art\adddot}}
+\AtEveryBibitem{%
+  \ifentrytype{article}{\iffieldundef{doi}{}{\clearfield{url}\clearfield{urlyear}}}{}}
+\DeclareFieldFormat{url}{\mkbibbrackets{En línea}\addperiod\space Disponible\addcolon\space\url{#1}}
+\DeclareFieldFormat{urldate}{Consultado el\space#1}
+\renewbibmacro*{url+urldate}{%
+  \ifentrytype{online}{\printdate\setunit{\addperiod\space}}{}%
+  \usebibmacro{urldate}%
+  \setunit{\addperiod\space}%
+  \usebibmacro{url}}
+\urlstyle{same}
+\setlength{\bibitemsep}{0.22\baselineskip}
+\setlength{\textfloatsep}{12pt plus 3pt minus 3pt}
+\setlength{\intextsep}{11pt plus 3pt minus 3pt}
+\setlength{\floatsep}{11pt plus 3pt minus 3pt}
+\setlength{\abovecaptionskip}{5pt}
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+\setcounter{topnumber}{3}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\textfraction}{0.12}
+\renewcommand{\floatpagefraction}{0.75}
+
+\makeatletter
+\newenvironment{figuraenlinea}{%
+  \par\addvspace{\intextsep}\noindent
+  \begin{minipage}{\linewidth}\centering\small\def\@captype{figure}%
+}{%
+  \end{minipage}\par\addvspace{\intextsep}%
+}
+\makeatother
 
 \begin{document}
 
 \begin{titlepage}
-  \sffamily
   \raggedright
-  \vspace*{0.9cm}
+  \vspace*{0.5cm}
   {\large\bfseries Universidad Técnica Estatal de Quevedo\par}
   \vspace{0.35em}
   Facultad de Ciencias de la Computación\par
@@ -24,12 +54,12 @@
   \vspace{1.4em}
   \hrule height 0.55pt
 
-  \vspace{3.5cm}
+  \vspace{2.6cm}
   {\small\bfseries\MakeUppercase{Aplicaciones Distribuidas}\par}
   \vspace{0.4em}
   {\small Informe académico individual \enspace\textbar\enspace TA-IND-01\par}
   \vspace{1.4em}
-  {\fontsize{33}{38}\selectfont\bfseries
+  {\fontsize{29}{34}\selectfont\bfseries
     Entrega y recuperación\\
     de mensajes en Discord\par}
   \vspace{0.7em}
@@ -53,7 +83,7 @@
   \vspace{1.5em}
   {\small\bfseries Repositorio del informe\par}
   \vspace{0.25em}
-  {\footnotesize\url{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}\par}
+  {\fontsize{7.5}{9}\selectfont\url{https://github.com/Yukisan-uwo/TA-IND-01-Informe-Academico-Individual-Analisis-Critico-de-Sistemas-Distribuidos-Grupo}\par}
   \vspace*{0.9cm}
 \end{titlepage}
 
@@ -116,17 +146,11 @@ La figura~\ref{fig:arquitectura-discord} digitaliza el bosquejo del
 Anexo~\ref{anexo:bosquejo}. La línea punteada indica la relación
 conceptual entre crear un mensaje y generar un evento para el cliente.
 
-\begin{center}
-\begin{minipage}{0.96\linewidth}
-  \centering
-  \makeatletter
-  \def\@captype{figure}
-  \makeatother
-  \includegraphics[width=\linewidth]{figuras/arquitectura-discord.pdf}
+\begin{figuraenlinea}
+  \includegraphics[width=0.82\linewidth]{figuras/arquitectura-discord.pdf}
   \caption{Flujos de solicitud, almacenamiento y entrega de eventos en Discord.}
   \label{fig:arquitectura-discord}
-\end{minipage}
-\end{center}
+\end{figuraenlinea}
 
 \section{Conceptos de sistemas distribuidos}
 \subsection{Transparencias}
@@ -171,7 +195,7 @@ una dependencia de sus tiempos de respuesta. Las mediciones publicadas
 de configuraciones NoSQL muestran que el efecto de variar la
 consistencia depende del motor, la operación y el despliegue
 \cite{ferreira2024consistency}. Discord reportó que el percentil 99 de
-lectura de historial pasó de 40--125 ms con Cassandra a 15 ms con
+lectura de historial pasó de un rango de 40 a 125 ms con Cassandra a 15 ms con
 ScyllaDB después de su migración y cambios de arquitectura
 \cite{ingram2023messages}. Ese dato describe una mejora observada y no
 identifica por sí solo la política de consistencia del historial.
@@ -219,6 +243,16 @@ control de esta ronda. Al reconectar, los tres mensajes aparecieron sin
 recarga manual. La captura posterior muestra una entrada de cada mensaje,
 en orden M1, M2 y M3. La hora visible corresponde a la captura. El
 tiempo de recuperación quedó sin medir.
+
+Las figuras~\ref{fig:control} a~\ref{fig:reconexion} documentan
+el mensaje de control, el corte y el estado posterior a la reconexión.
+
+\begin{figuraenlinea}
+  \includegraphics[width=0.92\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
+  \caption{Mensaje de control visible en Chrome con la laptop conectada.}
+  \label{fig:control}
+\end{figuraenlinea}
+
 La laptop usó Chrome y el teléfono permaneció conectado con datos
 móviles. Los comandos \texttt{Get-Date}, \texttt{whoami} y
 \texttt{Write-Output} registraron la hora, el usuario y las
@@ -227,22 +261,21 @@ observaciones manuales. El procedimiento está en
 \path{resultados/sesion-20261112-233908.txt} e incluye una anotación
 posterior sobre la reconexión.
 
-\begin{figure}[p]
-  \centering
-  \includegraphics[width=\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
-  \caption{Mensaje de control visible en Chrome con la laptop conectada.}
-  \includegraphics[width=\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
+\begin{figuraenlinea}
+  \includegraphics[width=0.92\linewidth]{../resultados/capturas/03a-inicio-del-corte.png}
   \caption{Inicio del corte con el indicador de red de Windows sin Internet.}
-\end{figure}
+\end{figuraenlinea}
 
-\begin{figure}[p]
-  \centering
-  \includegraphics[width=\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
+\begin{figuraenlinea}
+  \includegraphics[width=0.92\linewidth]{../resultados/capturas/03b-chrome-despues-del-envio.png}
   \caption{Chrome aún muestra M0 a las 00:09. El registro manual y el icono de Wi-Fi se conservan como aparecen en la captura.}
-  \includegraphics[width=\linewidth]{../resultados/capturas/04-reconexion.png}
+\end{figuraenlinea}
+
+\begin{figuraenlinea}
+  \includegraphics[width=0.92\linewidth]{../resultados/capturas/04-reconexion.png}
   \caption{Estado capturado a las 00:19 con los tres mensajes visibles después de reconectar.}
-\end{figure}
-\clearpage
+  \label{fig:reconexion}
+\end{figuraenlinea}
 
 El resultado describe la recuperación del estado visible del cliente.
 La prueba interrumpió el acceso a la red de una laptop y mantuvo el
@@ -259,7 +292,10 @@ de estado. Esto ilustra una transparencia a fallos parcial: el cliente
 puede gestionar la reconexión y, al mismo tiempo, hacer visible la
 interrupción al usuario.
 
-\paragraph{Zulip y el historial por temas.}
+\par\addvspace{\intextsep}\noindent
+\begin{minipage}[t]{0.63\linewidth}
+\vspace{0pt}
+\textbf{Zulip y el historial por temas.}\enspace
 En la demo de Zulip, Byron envió \texttt{ZULIP-M1} al tema
 \textit{Prueba TA-IND-01} del canal \texttt{\#general}. Con apoyo de
 Codex se abrió el tema \textit{saludos} y luego se volvió a
@@ -267,6 +303,15 @@ Codex se abrió el tema \textit{saludos} y luego se volvió a
 ilustra la transparencia de acceso: el usuario consulta el historial
 por canal y tema desde la interfaz, que se encarga de obtener los datos.
 La figura~\ref{fig:zulip-tema} muestra el resultado de la comprobación.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.33\linewidth}
+\vspace{0pt}
+\begin{figuraenlinea}
+  \includegraphics[width=\linewidth,height=0.25\textheight,keepaspectratio]{../resultados/capturas/zulip-tema-prueba.jpg}
+  \caption{Vista del mensaje al volver a abrir el tema de prueba en Zulip.}
+  \label{fig:zulip-tema}
+\end{figuraenlinea}
+\end{minipage}\par
 
 \section{Comparación con Zulip}
 La comparación considera Discord como servicio administrado y Zulip
@@ -274,8 +319,10 @@ como una instalación con servidor de aplicación y PostgreSQL
 separados, según la configuración documentada
 \cite{ingram2023messages,zulipArchitecture,zulipPostgresql}.
 
-\begin{center}
-\small
+\begin{table}[!htbp]
+\caption{Comparación de la arquitectura y recuperación de mensajes en Discord y Zulip.}
+\centering\small
+\renewcommand{\arraystretch}{1.13}
 \begin{tabularx}{\linewidth}{|p{0.22\linewidth}|X|X|}
 \hline
 \textbf{Criterio} & \textbf{Discord} & \textbf{Zulip} \\
@@ -302,7 +349,7 @@ aplicaciones. & El cliente confirma eventos mediante su último ID.
 Si la cola expira, obtiene el estado inicial de nuevo. \\
 \hline
 \end{tabularx}
-\end{center}
+\end{table}
 
 Fuentes de la comparación
 \cite{ingram2023messages,discordGateway,smith2023authOutage,zulipArchitecture,zulipSendingMessages,zulipPostgresql,zulipEvents}.
@@ -319,13 +366,6 @@ La demo permitió observar la organización del historial por temas en
 Zulip. La prueba de Discord observó la recuperación del historial
 visible tras un corte de conexión. La comparación de los mecanismos
 internos se apoya en la documentación técnica de cada plataforma.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.56\linewidth,height=0.37\textheight,keepaspectratio]{../resultados/capturas/zulip-tema-prueba.jpg}
-  \caption{Mensaje enviado por Byron en el tema de prueba de Zulip. Codex capturó la vista al volver a abrir el tema.}
-  \label{fig:zulip-tema}
-\end{figure}
 
 \section{Postura crítica}
 El diseño de Discord reduce la presión sobre el almacenamiento cuando
@@ -373,6 +413,7 @@ fragmentos y tomó las capturas de los PDF que yo resalté. La bitácora
 identifica los avances cuyos mensajes de commit redactó Codex.
 Para la figura de arquitectura, Codex preparó el archivo de draw.io
 a partir del bosquejo que dibujé y me ayudó a exportarlo.
+También ajustó la maquetación y comprobó la compilación del PDF.
 
 Verifiqué el resultado de la prueba principal al desconectar y
 reconectar mi laptop, enviar los mensajes desde el celular y comprobar
@@ -383,7 +424,6 @@ Contrasté con Codex las referencias de Ferreira y de Bação y Guerreiro
 con los datos de Springer. Codex cotejó la referencia de Kokociński y
 colaboradores con la ficha de Elsevier y el PDF del artículo.
 
-\clearpage
 \printbibliography
 
 \clearpage
@@ -391,31 +431,26 @@ colaboradores con la ficha de Elsevier y el PDF del artículo.
 \section{Bosquejo inicial}
 \label{anexo:bosquejo}
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=\linewidth,height=0.80\textheight,keepaspectratio]{../evidencias/bosquejo/arquitectura-discord.png}
+\begin{figuraenlinea}
+  \includegraphics[width=0.91\linewidth]{../evidencias/bosquejo/arquitectura-discord.png}
   \caption{Bosquejo de la arquitectura de mensajes de Discord, dibujado a mano por Byron Daniel Loor Mendoza el 12 de noviembre de 2026.}
-\end{figure}
+\end{figuraenlinea}
 
-\clearpage
 \section{Lectura de fuentes}
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=\linewidth]{../evidencias/lecturas/01-ferreira-consistencia.jpg}
+\begin{figuraenlinea}
+  \includegraphics[width=0.97\linewidth]{../evidencias/lecturas/01-ferreira-consistencia.jpg}
   \caption{Ferreira et al. \cite{ferreira2024consistency}, p. 14. Efecto de la consistencia fuerte sobre el rendimiento y el tiempo de respuesta en operaciones de escritura.}
-\end{figure}
+\end{figuraenlinea}
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=\linewidth]{../evidencias/lecturas/02-bacao-eventos.jpg}
+\begin{figuraenlinea}
+  \includegraphics[width=0.97\linewidth]{../evidencias/lecturas/02-bacao-eventos.jpg}
   \caption{Bação y Guerreiro \cite{bacao2026consistency}, p. 4. Publicación y suscripción a eventos en la comunicación asíncrona.}
-\end{figure}
+\end{figuraenlinea}
 
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=\linewidth]{../evidencias/lecturas/03-kokocinski-fallos.jpg}
+\begin{figuraenlinea}
+  \includegraphics[width=0.97\linewidth]{../evidencias/lecturas/03-kokocinski-fallos.jpg}
   \caption{Kokociński et al. \cite{kokocinski2023correctness}, p. 11. Pérdida de una actualización confirmada tras el fallo de una réplica.}
-\end{figure}
+\end{figuraenlinea}
 
 \end{document}
