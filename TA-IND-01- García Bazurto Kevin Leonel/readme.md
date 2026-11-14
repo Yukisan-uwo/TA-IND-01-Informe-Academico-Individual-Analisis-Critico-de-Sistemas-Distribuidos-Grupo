@@ -40,3 +40,23 @@ de consistencia.
 - [Diagrama editable de la arquitectura en Docker](./Evidencias/diagrama%20de%20arquitectura%20de%20Cassandra%20en%20Docker.drawio)
 - [Esquema inicial dibujado a mano](./esquema-inicial.jpeg)
 - [Bitácora de trabajo](./BITACORA.md)
+
+## Observación sobre el historial de commits
+
+El historial de mi trabajo registra commits en dos días, el 12 y el 13 de
+noviembre, en hora de Ecuador. Durante esos días tuve cortes de luz que
+afectaron el tiempo que pude dedicar a la actividad. Le pido disculpas por
+no haber alcanzado los tres días de commits que solicita la rúbrica.
+
+Le agradecería que considere el trabajo realizado y las evidencias adjuntas
+al evaluar mi entrega. En el repositorio están el informe, la bitácora,
+las capturas originales del experimento y el enlace al video de sustentación.
+
+## Declaración de uso de inteligencia artificial
+
+Utilicé ChatGPT en modo Codex, con el modelo GPT-6.1 Sol, como apoyo para
+estructurar y mejorar la redacción de los archivos Markdown del repositorio.
+Me ayudó a organizar las actividades por fecha en la bitácora, presentar
+el proyecto y sus evidencias en el README, y ordenar los comandos y resultados
+en `prueba-cassandra.md`. Para documentar la prueba, me basé en los comandos
+que ejecuté y en las capturas que tomé durante la práctica.
