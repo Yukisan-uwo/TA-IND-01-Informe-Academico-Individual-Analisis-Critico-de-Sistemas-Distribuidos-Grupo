@@ -135,3 +135,40 @@ Nueve capturas de lectura preparadas, siete fuentes utilizadas en el borrador de
 
 ### Tiempo dedicado:
 4 horas aproximadamente.
+
+## Cierre del informe, diagrama y sustentación (13 de noviembre de 2026)
+### Actividades realizadas
+- Completé la redacción del informe sobre RabbitMQ y su comparación crítica con Apache Kafka.
+- Organicé los apartados de arquitectura, transparencias de distribución, CAP, PACELC, modelos de comunicación, tolerancia a fallos y recuperación.
+- Incorporé la descripción de las pruebas realizadas, sus resultados y las limitaciones del entorno experimental.
+- Añadí ejemplos relacionados con el SGA de la UTEQ y el uso de GitHub, diferenciando las observaciones personales de las características internas que no fueron verificadas.
+- Incluí un incidente real documentado como referencia para relacionar la disponibilidad del servicio con las condiciones de infraestructura.
+- Revisé las referencias bibliográficas y las citas del documento, utilizando biblatex con estilo IEEE y Biber.
+- Incorporé al informe las capturas de las pruebas experimentales y las nueve capturas anotadas de lectura como evidencias.
+- Elaboré el diagrama definitivo de la arquitectura en draw.io y guardé tanto el archivo XML editable como sus exportaciones PNG.
+- Conservé el bosquejo inicial elaborado a mano para incluirlo como evidencia del proceso.
+- Revisé la presentación del PDF y comparé su organización visual con un ejemplo de informe de otro estudiante, utilizando únicamente el formato como referencia.
+- Revisé errores reportados durante la compilación de main.tex y referencias.bib y realicé las correcciones correspondientes.
+- Revisé la sincronización del repositorio. Ejecuté git fetch origin, git pull --rebase origin main y git push origin main; posteriormente comprobé que la rama local estuviera actualizada con origin/main.
+- Dejé fuera del control de versiones los archivos auxiliares generados por LaTeX, como .aux, .bcf, .blg, .log, .out y .run.xml, conservando los archivos fuente y el PDF de entrega.
+- Preparé el guion, grabé el video de sustentación y lo publiqué en YouTube.
+### Dificultades encontradas
+- Durante la compilación aparecieron errores relacionados con el documento LaTeX y las referencias bibliográficas.
+- Al sincronizar GitHub, la rama local y la remota llegaron a tener cambios distintos, por lo que inicialmente no se podían enviar los cambios directamente.
+- Se generaron archivos auxiliares de LaTeX que no correspondían a los archivos finales que se debían subir al repositorio.
+### Soluciones aplicadas
+- Revisé las líneas señaladas en main.tex y referencias.bib y corregí los elementos que estaban provocando los errores reportados.
+- Sincronicé los cambios remotos con git fetch y git pull --rebase antes de ejecutar nuevamente git push.
+- Comprobé el estado de Git y decidí no agregar los archivos auxiliares de compilación a la entrega.
+- Organicé el diagrama con su archivo editable y sus exportaciones para conservar la posibilidad de modificarlo posteriormente.
+### Resultados obtenidos
+- Informe académico desarrollado en LaTeX, con bibliografía y evidencias.
+- PDF del informe generado para su revisión y entrega.
+- Diagrama de arquitectura elaborado en draw.io, con XML editable y archivos PNG.
+- Capturas de lectura y de experimentación organizadas en sus respectivas carpetas.
+- Repositorio sincronizado con la rama remota.
+- Video de sustentación publicado en YouTube: https://youtu.be/QhIJK3b6n10
+### Observación para la revisión final
+Al revisar nuevamente los archivos publicados, se identificó que algunos nombres de imágenes del repositorio deben coincidir exactamente con las rutas indicadas en main.tex. Por ello, antes de considerar reproducible la compilación desde una copia limpia del repositorio, se debe verificar esa correspondencia y volver a generar el PDF.
+### Tiempo dedicado
+3 horas aproximadamente.
