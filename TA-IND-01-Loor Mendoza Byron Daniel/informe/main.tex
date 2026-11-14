@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 \pdfminorversion=7
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
@@ -91,6 +91,9 @@
   \vspace*{0.9cm}
 \end{titlepage}
 
+\linespread{1.10}\selectfont
+\clubpenalty=10000
+\widowpenalty=10000
 \begin{multicols}{2}
 \section*{Resumen}
 Este informe analiza la entrega y el almacenamiento de mensajes de texto
@@ -155,10 +158,6 @@ conceptual entre crear un mensaje y generar un evento para el cliente.
   \caption{Flujos de solicitud, almacenamiento y entrega de eventos en Discord.}
   \label{fig:arquitectura-discord}
 \end{bloqueenlinea}
-\end{multicols}
-
-\clearpage
-\begin{multicols}{2}
 \section{Conceptos distribuidos}
 \subsection{Transparencias}
 \begin{description}
@@ -233,10 +232,6 @@ de actualización \cite{smith2023authOutage}. La replicación ayuda a
 tolerar la pérdida de una zona, pero la capacidad de las restantes
 también condiciona el servicio. Los reintentos pueden agravar la
 sobrecarga cuando muchas solicitudes fallan a la vez.
-\end{multicols}
-
-\clearpage
-\begin{multicols}{2}
 \section{Experimento}
 \subsection{Piloto asistido}
 El 12 de noviembre de 2026, Codex operó dos clientes web en una PC.
@@ -266,6 +261,13 @@ observaciones manuales. El procedimiento está en
 \path{resultados/sesion-20261112-233908.txt} e incluye una anotación
 posterior sobre la reconexión.
 
+El resultado describe la recuperación del estado visible del cliente.
+La prueba interrumpió el acceso a la red de una laptop y mantuvo el
+teléfono conectado. Las réplicas del servicio quedaron fuera del
+control experimental. Por eso, la observación no permite clasificar
+Discord según CAP ni identificar si el cliente reanudó una sesión del
+Gateway o consultó el historial.
+
 \begin{bloqueenlinea}
   \includegraphics[width=\linewidth]{../resultados/capturas/02-mensaje-recibido.png}
   \caption{Mensaje de control visible en Chrome con la laptop conectada.}
@@ -288,16 +290,6 @@ posterior sobre la reconexión.
   \label{fig:reconexion}
 \end{bloqueenlinea}
 
-El resultado describe la recuperación del estado visible del cliente.
-La prueba interrumpió el acceso a la red de una laptop y mantuvo el
-teléfono conectado. Las réplicas del servicio quedaron fuera del
-control experimental. Por eso, la observación no permite clasificar
-Discord según CAP ni identificar si el cliente reanudó una sesión del
-Gateway o consultó el historial.
-\end{multicols}
-
-\clearpage
-\begin{multicols}{2}
 \section{Ejemplos del entorno}
 \paragraph{Discord y el aviso de reconexión.}
 Cuando se corta mi conexión, he visto el aviso «Reconectando» en la zona
@@ -379,10 +371,6 @@ La demo permitió observar la organización del historial por temas en
 Zulip. La prueba de Discord observó la recuperación del historial
 visible tras un corte de conexión. La comparación de los mecanismos
 internos se apoya en la documentación técnica de cada plataforma.
-\end{multicols}
-
-\clearpage
-\begin{multicols}{2}
 \section{Postura crítica}
 El diseño de Discord reduce la presión sobre el almacenamiento cuando
 muchos usuarios consultan los mismos mensajes. Reunir esas consultas
@@ -419,27 +407,29 @@ latencia de ambos sistemas harían falta pruebas con las mismas
 condiciones y control sobre el almacenamiento.
 
 \section*{Declaración de uso de IA}
-Usé OpenAI Codex (modelo GPT-6.1 Sol) para estructurar, redactar y
-revisar partes del informe, revisar la consigna y cotejar referencias
-y DOI. Codex también digitalizó mi bosquejo en draw.io, ajustó la
-maquetación en LaTeX, compiló el PDF y organizó el repositorio. La
-bitácora registra los avances en los que redactó mensajes de commit.
+Elegí Discord por mi experiencia con la plataforma y enfoqué la
+comparación con Zulip en la entrega y recuperación de mensajes.
+Usé OpenAI Codex (modelo GPT-6.1 Sol) para planificar los pasos de
+trabajo, redactar y revisar partes del borrador en LaTeX, organizar
+las carpetas del repositorio, preparar los comandos de PowerShell
+y cotejar las referencias y sus DOI. También recibí apoyo para
+digitalizar mi dibujo, compilar el informe, ejecutar el piloto y
+documentar la prueba breve de Zulip.
 
-Codex ejecutó el piloto asistido de Discord y preparó el mensaje de
-prueba de Zulip, que envié personalmente. También tomó la captura
-de Zulip y las del Anexo B a partir de los pasajes que marqué.
+Dibujé el bosquejo inicial y ejecuté la prueba principal de Discord
+con mi laptop y mi celular. Comprobé en Chrome el orden de los
+mensajes tras reconectar y registré el resultado en PowerShell.
+Envié el mensaje de prueba en Zulip y marqué los fragmentos de las
+lecturas. Revisé los datos de Ferreira y de Bação y Guerreiro en
+Springer. El cotejo asistido de Kokociński y colaboradores se hizo
+con la ficha de Elsevier y el PDF. La bitácora registra el apoyo
+en los mensajes de commit y la documentación de las evidencias.
 
-Realicé la prueba principal en mi laptop y mi celular. Comprobé en
-Chrome el orden de los mensajes tras reconectar y registré lo observado
-en PowerShell. Leí y marqué los tres artículos del Anexo B. Contrasté
-con Codex las referencias de Ferreira y de Bação y Guerreiro en
-Springer. Codex cotejó la referencia de Kokociński y colaboradores
-con la ficha de Elsevier y el PDF del artículo.
-\end{multicols}
-
-\clearpage
-\begin{multicols}{2}
+\begingroup
+\raggedright
+\interlinepenalty=10000
 \printbibliography
+\endgroup
 \end{multicols}
 
 \clearpage
@@ -453,7 +443,6 @@ con la ficha de Elsevier y el PDF del artículo.
   \caption{Bosquejo de la arquitectura de mensajes de Discord, dibujado a mano por Byron Daniel Loor Mendoza el 12 de noviembre de 2026.}
 \end{bloqueenlinea}
 
-\columnbreak
 \section{Lectura de fuentes}
 
 \begin{bloqueenlinea}

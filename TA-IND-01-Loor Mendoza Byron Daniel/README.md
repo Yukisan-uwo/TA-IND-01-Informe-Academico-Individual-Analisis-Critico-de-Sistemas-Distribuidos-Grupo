@@ -52,7 +52,7 @@ Byron realizó una ronda con Discord web y un teléfono con datos móviles. Al v
 
 - [ ] Confirmar la entrega de FORM-FB-01 y FORM-AC-01, y el registro de Discord en el foro.
 - [x] Completar la carátula con facultad, nivel, paralelo y fecha.
-- [x] Comprobar la extensión del informe. El resumen tiene 181 palabras y el cuerpo ocupa exactamente cinco páginas, de la 2 a la 6 del PDF.
+- [x] Comprobar la extensión del informe. El resumen tiene 181 palabras y el cuerpo ocupa cinco páginas, de la 2 a la 6 del PDF. Las referencias empiezan al final de la página 6.
 - [ ] Revisar personalmente introducción, arquitectura, siete transparencias, CAP y PACELC, comunicación, tolerancia a fallos, tabla de comparación, postura crítica y conclusiones.
 - [x] Ejecutar una prueba propia y conservar cuatro capturas originales de la laptop y la [transcripción de PowerShell](resultados/sesion-20261112-233908.txt).
 - [x] Incorporar dos ejemplos de uso y relacionarlos con conceptos de la unidad. El aviso de reconexión de Discord ilustra la transparencia a fallos y la demo de Zulip ilustra la transparencia de acceso.
