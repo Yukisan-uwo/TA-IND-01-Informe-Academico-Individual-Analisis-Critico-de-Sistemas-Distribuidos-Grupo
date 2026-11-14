@@ -1,22 +1,20 @@
 # Prueba de disponibilidad de lectura en Apache Cassandra
 
+**Estudiante:** Kevin Leonel García Bazurto  
 **Fecha de ejecución:** 12 de noviembre de 2026  
 **Entorno:** Windows PowerShell 5.1 y Docker Desktop  
-**Versión probada:** Apache Cassandra 5.0.9  
+**Versión utilizada:** Apache Cassandra 5.0.9  
 **Clúster:** `TAIND01`, con tres nodos en el centro de datos `dc1`
 
 ## 1. Objetivo
 
-Comprobar si Cassandra puede devolver el mismo registro con los niveles de
-consistencia `ONE` y `QUORUM` cuando quedan tres, dos o una réplica activa.
-Durante la prueba mantuve encendido `taind-cas1` y usé ese nodo para coordinar
-todas las consultas.
+Comprobar si Cassandra podía devolver el mismo registro con `ONE` y
+`QUORUM` cuando quedaban tres, dos o una réplica activa. Mantuve encendido
+`taind-cas1` para recibir y coordinar todas las consultas.
 
-[Esquema inicial dibujado a mano](../esquema-inicial.jpeg)
+## 2. Preparación del clúster
 
-## 2. Preparación del clúster en Docker
-
-Ejecuté estos comandos en PowerShell:
+Desde PowerShell preparé el entorno:
 
 ```powershell
 docker version
@@ -24,9 +22,9 @@ docker pull cassandra:5.0
 docker network create taind-cassandra
 ```
 
-- `docker version` comprueba que la terminal puede comunicarse con el motor de Docker.
-- `docker pull cassandra:5.0` descarga la imagen de la serie 5.0. La versión exacta que usé fue 5.0.9.
-- `docker network create taind-cassandra` crea la red interna por la que se comunican los tres contenedores.
+`docker version` permite comprobar que Docker responde. `docker pull`
+descarga la imagen de la serie 5.0. `docker network create` crea la red
+interna por la que se comunican los tres contenedores.
 
 ### 2.1. Primer nodo
 
@@ -37,37 +35,29 @@ docker exec taind-cas1 nodetool status
 ```
 
 `docker run -d` crea el contenedor y lo deja ejecutándose en segundo plano.
-`--name` le da el nombre que uso desde PowerShell, `--hostname` fija su nombre
-interno y `--network` lo conecta a la red del laboratorio.
+`--name` fija el nombre con el que se maneja desde PowerShell, `--hostname`
+establece su nombre interno y `--network` lo conecta a la red del laboratorio.
+Las opciones `-e` configuran el nombre del clúster, el centro de datos,
+el mecanismo que identifica el centro de datos y el rack, y la memoria de Java.
 
-Las opciones `-e` establecen variables de entorno. En este caso definen el
-nombre del clúster (`TAIND01`), el centro de datos (`dc1`), el mecanismo que
-identifica la ubicación de los nodos por centro de datos y rack, y los tamaños
-de memoria de la máquina virtual de Java.
-
-`docker exec` ejecuta un comando dentro de un contenedor que ya está activo.
-`nodetool status` muestra los nodos que Cassandra reconoce. Una fila `UN`
-indica que el nodo está activo y en estado normal (*Up/Normal*).
-
-La primera consulta devolvió este mensaje durante el arranque:
+La primera consulta de estado devolvió este mensaje durante el arranque:
 
 ```text
 Error: No nodes present in the cluster. Has this node finished starting up?
 ```
 
-Revisé las últimas 60 líneas del registro y volví a consultar el estado:
+Revisé el registro de arranque y volví a consultar el estado:
 
 ```powershell
 docker logs --tail 60 taind-cas1
 docker exec taind-cas1 nodetool status
 ```
 
-El registro mostró `Startup complete`. Al repetir `nodetool status`, apareció
-una fila `UN` en `dc1` con la dirección `172.18.0.2`.
+`docker logs --tail 60` muestra las últimas 60 líneas del registro.
+Después del arranque, `nodetool status` mostró una fila `UN` en `dc1`.
+`UN` significa que el nodo está activo y en estado normal.
 
 ### 2.2. Segundo y tercer nodo
-
-Primero arranqué el nodo 2:
 
 ```powershell
 docker run -d --name taind-cas2 --hostname taind-cas2 --network taind-cassandra -e CASSANDRA_SEEDS=taind-cas1 -e CASSANDRA_CLUSTER_NAME=TAIND01 -e CASSANDRA_DC=dc1 -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -e MAX_HEAP_SIZE=768M -e HEAP_NEWSIZE=192M cassandra:5.0
@@ -75,11 +65,11 @@ docker run -d --name taind-cas2 --hostname taind-cas2 --network taind-cassandra 
 docker exec taind-cas1 nodetool status
 ```
 
-`CASSANDRA_SEEDS=taind-cas1` le indica al nodo nuevo con qué nodo puede
-contactar para descubrir el clúster. La primera consulta de estado todavía
-mostraba una sola fila. Al repetirla, aparecieron dos filas `UN`.
+`CASSANDRA_SEEDS=taind-cas1` indica al nodo nuevo con qué nodo puede
+contactar para descubrir el clúster. La primera consulta aún mostraba
+una sola fila. Al repetirla aparecieron dos filas `UN`.
 
-Cuando los dos primeros nodos estuvieron activos, inicié el tercero:
+Con los dos primeros nodos activos, inicié el tercero:
 
 ```powershell
 docker run -d --name taind-cas3 --hostname taind-cas3 --network taind-cassandra -e CASSANDRA_SEEDS=taind-cas1 -e CASSANDRA_CLUSTER_NAME=TAIND01 -e CASSANDRA_DC=dc1 -e CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch -e MAX_HEAP_SIZE=768M -e HEAP_NEWSIZE=192M cassandra:5.0
@@ -89,28 +79,27 @@ docker exec taind-cas1 nodetool version
 docker exec taind-cas1 nodetool status
 ```
 
-`Get-Date` muestra la fecha y hora en la terminal. `nodetool version` confirmó
-la versión 5.0.9 y `nodetool status` mostró tres filas `UN` en `dc1`.
+`Get-Date` muestra la fecha y hora del equipo. `nodetool version` confirmó
+Cassandra 5.0.9 y `nodetool status` mostró los tres nodos con estado `UN`.
 
-[Captura 1. Clúster con tres nodos activos](../Evidencias/01-cluster-tres-nodos.jpeg)
+[Captura 1. Estado inicial del clúster](../Evidencias/01-cluster-tres-nodos.jpeg)
 
 ## 3. Creación del registro de prueba
 
-Abrí `cqlsh` desde PowerShell:
+Abrí el cliente de Cassandra dentro del primer contenedor:
 
 ```powershell
 Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 docker exec -it taind-cas1 cqlsh
 ```
 
-`-it` abre una sesión interactiva. `cqlsh` es el cliente de Cassandra que
-permite ejecutar instrucciones en CQL. Al abrirlo dentro de `taind-cas1`,
-se conectó al puerto `9042` de ese contenedor. Por eso el nodo 1 recibió y
-coordinó las consultas.
+`docker exec -it` ejecuta `cqlsh` en una sesión interactiva dentro de
+`taind-cas1`. El cliente se conectó a `127.0.0.1:9042` desde el contenedor.
+El nodo 1 recibió las consultas y actuó como coordinador.
 
 Con los tres nodos activos, ejecuté estas instrucciones en `cqlsh`:
 
-```sql
+```cql
 CREATE KEYSPACE IF NOT EXISTS laboratorio
 WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': 3};
 
@@ -125,23 +114,22 @@ INSERT INTO laboratorio.eventos (id, descripcion)
 VALUES (1, 'Prueba de replicacion');
 ```
 
-- `CREATE KEYSPACE` crea el espacio `laboratorio`. `NetworkTopologyStrategy`
-  permite configurar la replicación por centro de datos. El valor `3` asigna
-  tres réplicas a los datos de este espacio en `dc1`.
-- `CREATE TABLE` crea la tabla `eventos`. `id` es la clave primaria y
-  `descripcion` guarda el texto del registro.
-- `IF NOT EXISTS` permite ejecutar la instrucción de creación aunque el
-  objeto ya exista.
-- `CONSISTENCY ALL` fija el nivel de consistencia de la sesión hasta que se
-  cambie. El `INSERT` debe recibir la confirmación de las tres réplicas.
-- `INSERT` guarda el registro con `id = 1`. La terminal volvió a `cqlsh>`
-  sin mostrar un error.
+- `CREATE KEYSPACE` crea el espacio `laboratorio` y configura tres
+  réplicas en `dc1` con `NetworkTopologyStrategy`.
+- `CREATE TABLE` crea la tabla `eventos`. `id` identifica el registro y
+  `descripcion` almacena el texto.
+- `IF NOT EXISTS` evita un error si el espacio o la tabla ya existen.
+- `CONSISTENCY ALL` fija el nivel de consistencia de la sesión para que
+  la escritura requiera la confirmación de las tres réplicas.
+- `INSERT` guarda el registro con `id = 1`. La terminal volvió a
+  `cqlsh>` sin mostrar un error.
 
-## 4. Procedimiento y resultados
+## 4. Consultas y resultados
 
-En cada escenario repetí estas instrucciones en `cqlsh`:
+Repetí la misma consulta en los tres escenarios. Cambié el nivel de
+consistencia entre una lectura y la siguiente:
 
-```sql
+```cql
 CONSISTENCY ONE;
 SELECT * FROM laboratorio.eventos WHERE id = 1;
 
@@ -149,13 +137,13 @@ CONSISTENCY QUORUM;
 SELECT * FROM laboratorio.eventos WHERE id = 1;
 ```
 
-`SELECT` recupera el mismo registro en cada escenario. `ONE` exige la
-respuesta de una réplica. `QUORUM` exige una mayoría de las réplicas
-configuradas, que en esta prueba corresponde a dos de tres.
+`SELECT` consulta el mismo registro en cada prueba. `ONE` requiere la
+respuesta de una réplica. Con un factor de replicación de tres,
+`QUORUM` requiere dos respuestas.
 
-### 4.1. Lectura con tres réplicas activas
+### 4.1. Tres réplicas activas
 
-Con los tres nodos activos, ambas consultas devolvieron una fila:
+Los tres nodos estaban activos. Las dos consultas devolvieron esta fila:
 
 ```text
  id | descripcion
@@ -167,28 +155,11 @@ Con los tres nodos activos, ambas consultas devolvieron una fila:
 
 [Captura 2. Lecturas con tres réplicas activas](../Evidencias/02-lecturas-tres-replicas.png)
 
-### 4.2. Lectura con dos réplicas activas
+### 4.2. Dos réplicas activas
 
-En una ventana de PowerShell, detuve el nodo 3 y consulté el estado del
-clúster desde el nodo 1:
-
-```powershell
-docker stop taind-cas3
-Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-docker exec taind-cas1 nodetool status
-```
-
-`docker stop` detiene el contenedor indicado. `nodetool status` permite
-comprobar que el clúster lo ve como caído (`DN`). Después repetí las lecturas
-con `ONE` y `QUORUM` desde `cqlsh`.
-
-**Resultado observado:**
-
-[Captura 3. Lecturas con dos réplicas activas](../Evidencias/03-lecturas-dos-replicas.png)
-
-### 4.3. Lectura con una réplica activa
-
-Con el nodo 3 todavía detenido, detuve también el nodo 2:
+La captura de Docker Desktop muestra `taind-cas2` detenido y
+`taind-cas1` y `taind-cas3` activos. Para reproducir ese estado
+desde PowerShell, se puede usar:
 
 ```powershell
 docker stop taind-cas2
@@ -196,35 +167,59 @@ Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 docker exec taind-cas1 nodetool status
 ```
 
-Volví a abrir `cqlsh` en `taind-cas1` y repetí las mismas lecturas. `ONE`
-devolvió el registro `id = 1` con la descripción `Prueba de replicacion`.
-La consulta con `QUORUM` devolvió esta salida:
+`docker stop` detiene el contenedor indicado. `nodetool status` permite
+comprobar si el clúster ya detectó el nodo como caído (`DN`).
+
+**Resultado observado:** con dos réplicas activas, `ONE` y `QUORUM`
+devolvieron el registro `id = 1` con la descripción `Prueba de replicacion`.
+
+[Captura 3. Lecturas con dos réplicas activas](../Evidencias/03-lecturas-dos-replicas.png)
+
+### 4.3. Una réplica activa
+
+En este escenario quedó activo `taind-cas1`. Para reproducirlo desde
+el estado de la sección anterior, se puede detener `taind-cas3` y
+comprobar el estado del clúster:
+
+```powershell
+docker stop taind-cas3
+Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+docker exec taind-cas1 nodetool status
+```
+
+Repetí ambas consultas desde `cqlsh` en el nodo 1. `ONE` devolvió el
+registro `id = 1` con la descripción `Prueba de replicacion`. Al cambiar
+a `QUORUM`, obtuve esta salida:
 
 ```text
 NoHostAvailable: ('Unable to complete the operation against any hosts', {<Host: 127.0.0.1:9042 dc1>: Unavailable('Error from server: code=1000 [Unavailable exception] message="Cannot achieve consistency level QUORUM" info={\'consistency\': \'QUORUM\', \'required_replicas\': 2, \'alive_replicas\': 1}')})
 ```
 
-Dentro del mensaje, `required_replicas: 2` indica cuántas réplicas exigía la
-lectura y `alive_replicas: 1` indica cuántas estaban disponibles.
+`required_replicas: 2` indica cuántas réplicas exigía la lectura.
+`alive_replicas: 1` indica cuántas estaban disponibles.
 
 [Captura 4. Lecturas con una réplica activa](../Evidencias/04-lecturas-una-replica.png)
 
 ## 5. Interpretación
 
-Al detener dos nodos, pude seguir leyendo el registro con `ONE` porque
-bastaba la respuesta de la única réplica activa. Al repetir la misma consulta
-con `QUORUM`, Cassandra devolvió `Unavailable` porque necesitaba dos réplicas
-disponibles. El nivel de consistencia elegido determinó si podía completar
-la lectura durante la detención controlada de los nodos.
+Con tres y con dos réplicas activas, los dos niveles permitieron leer
+el registro. Cuando quedó una sola réplica, `ONE` siguió funcionando
+y `QUORUM` devolvió `Unavailable`. En esta configuración, la misma
+consulta tuvo distinta disponibilidad según el nivel seleccionado.
+
+La prueba observó lecturas de un registro escrito antes de detener
+los contenedores. Para evaluar qué versión se leería si el dato cambiara
+durante el fallo, haría falta otra prueba con escrituras concurrentes.
 
 ## 6. Restablecimiento del clúster
 
-Para volver a encender los contenedores detenidos y verificar su estado:
+Para volver al estado inicial:
 
 ```powershell
 docker start taind-cas2 taind-cas3
 docker exec taind-cas1 nodetool status
 ```
 
-`docker start` vuelve a encender los contenedores que ya existen. El clúster
-está listo cuando `nodetool status` vuelve a mostrar tres filas `UN` en `dc1`.
+`docker start` enciende los contenedores existentes. Una vez que los nodos
+terminen de arrancar, `nodetool status` debería volver a mostrar tres
+filas `UN` en `dc1`.
